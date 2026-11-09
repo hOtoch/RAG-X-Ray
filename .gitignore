@@ -1,0 +1,43 @@
+# --- Segredos ---
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+
+# --- Dados e modelos (gerados, não versionados) ---
+data/
+*.parquet
+.cache/
+models/
+huggingface/
+
+# --- Eval: resultados são versionados, rascunhos não ---
+eval/results/*.tmp.json
+eval/results/scratch/
+
+# --- Editores e SO ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
