@@ -1,6 +1,6 @@
 # ADR-0001: Corpus da documentação do LangGraph
 
-- **Status:** Proposto (escopo exato a confirmar antes da issue de ingestão)
+- **Status:** Aceito
 - **Data:** 2026-11-09
 
 ## Contexto
@@ -25,17 +25,16 @@ Tamanho medido nesse commit:
 
 ## Decisão
 
-Usar a documentação do LangGraph do commit fixado acima, na pasta `src/oss/langgraph/**`, com as 45 páginas `.mdx` como ponto de partida. Essa pasta é a mais relevante para perguntas de RAG, agentes e grafos, e já cobre o tema central do projeto.
+Usar todo o `src/oss/**` do commit fixado acima: 773 páginas `.md`/`.mdx`, cerca de 8,5 MB. Isso inclui LangGraph, LangChain, DeepAgents, conceitos, referência e os guias de integração em Python e JavaScript (529 páginas).
 
-**Ponto em aberto:** o escopo de 45 páginas fica abaixo da faixa de "centenas de documentos" do briefing. Antes da issue de ingestão, decidir entre:
+O escopo completo atende o critério de "centenas a poucos milhares de documentos" do briefing. Os guias de integração competem com as páginas de LangGraph no retrieval, o que torna o eval mais exigente e mais realista.
 
-1. Manter só `src/oss/langgraph/**` (mais simples, perguntas mais focadas).
-2. Ampliar para `src/oss/**` (773 páginas, inclui LangChain, conceitos e Python/JS), que atende melhor o briefing e aumenta o desafio do retrieval.
-
-Esta decisão deve ser revista quando a ingestão estiver pronta, porque o número de documentos muda o comportamento do retrieval e precisa aparecer nos eval.
+O número de documentos muda o comportamento do retrieval, então ele precisa aparecer em todo `eval/results/*.json`.
 
 ## Alternativas consideradas
 
+- **Só `src/oss/langgraph/**` (45 páginas):** mais focado, mas pequeno demais para o critério do briefing e para um eval com perguntas de retrieval difíceis.
+- **Recorte sem integrações (~210 páginas):** LangGraph, LangChain, DeepAgents, conceitos e referência. Evita o ruído dos guias de integração, mas descarta justamente as páginas que competem no retrieval.
 - **Documentação do Kubernetes:** corpus grande e muito multi-hop, mas indexação mais cara e menos alinhada ao tema de agentes. Licença CC BY 4.0, exigiria atribuição.
 - **Normas do Banco Central, CVM ou LGPD:** domínio brasileiro pouco explorado, com citação obrigatória, mas os textos são PDFs e exigem parsing mais difícil antes de qualquer RAG. Fica como projeto futuro.
 - **Papers do arXiv sobre RAG:** o tema vira o próprio dataset, mas o parsing de PDF científico é trabalhoso e é mais difícil dizer se uma resposta está certa.
