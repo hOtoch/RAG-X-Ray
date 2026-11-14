@@ -146,9 +146,7 @@ def pack(blocks: list[str], max_tokens: int, overlap_tokens: int) -> list[str]:
     return chunks
 
 
-def chunk_document(
-    doc: Document, max_tokens: int = MAX_TOKENS, overlap_tokens: int = OVERLAP_TOKENS
-) -> list[Chunk]:
+def chunk_document(doc: Document, max_tokens: int = MAX_TOKENS, overlap_tokens: int = OVERLAP_TOKENS) -> list[Chunk]:
     chunks: list[Chunk] = []
     for headers, body in split_sections(doc.text):
         section = " > ".join(headers)

@@ -1,0 +1,8 @@
+# Cada entrada é uma versão do pipeline (um experimento de ablação).
+# O run_eval.py recebe o nome e salva o resultado em eval/results/<nome>.json.
+
+v0:
+  description: RAG ingênuo (busca densa top-k e geração direta)
+  retrieval_mode: dense
+  top_k: 5
+  generate_tier: medium

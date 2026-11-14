@@ -17,9 +17,7 @@ def _configure(conn: psycopg.Connection) -> None:
 
 @lru_cache
 def get_pool() -> ConnectionPool:
-    return ConnectionPool(
-        get_settings().database_url, min_size=1, max_size=8, configure=_configure, open=True
-    )
+    return ConnectionPool(get_settings().database_url, min_size=1, max_size=8, configure=_configure, open=True)
 
 
 def schema_sql(embedding_dim: int) -> str:
