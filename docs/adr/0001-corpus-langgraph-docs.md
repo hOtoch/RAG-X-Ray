@@ -45,3 +45,11 @@ O número de documentos muda o comportamento do retrieval, então ele precisa ap
 - A reprodutibilidade depende do commit fixado. Atualizar a fonte exige novo ADR ou nota neste.
 - Como a documentação muda com frequência, o eval só é comparável entre versões que usam o mesmo commit. Isso precisa ser registrado em cada `eval/results/*.json`.
 - A licença MIT permite indexar e citar com atribuição ao repositório de origem.
+
+## Medido na ingestão (2026-11-14)
+
+- 773 arquivos em `src/oss/**`; 743 viraram documentos (30 eram páginas de índice sem conteúdo próprio).
+- Os trechos de código ficam em `src/snippets/**` e são importados pelas páginas; a ingestão baixa esses arquivos e resolve os imports.
+- Páginas com abas de linguagem mantêm só a variante Python, exceto as de `javascript/`.
+- 10.800 chunks, mediana de 177 tokens, máximo de 460, cerca de 2,14 milhões de tokens no total.
+- Custo de indexação com `text-embedding-3-small`: cerca de US$ 0,045.
