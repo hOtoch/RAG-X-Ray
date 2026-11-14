@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Instalar dependências
+        run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check . ../eval
+      - name: Formatação
+        run: uv run ruff format --check . ../eval
+      - name: Testes (sem rede e sem LLM real)
+        run: uv run pytest -q

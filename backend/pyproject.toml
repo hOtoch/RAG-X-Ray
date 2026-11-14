@@ -19,6 +19,7 @@ dependencies = [
     "tiktoken>=0.7",
     "redis>=5.0",
     "numpy>=2.5.4",
+    "langfuse>=5.2.0",
 ]
 
 [dependency-groups]
@@ -44,4 +45,9 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = [".."]
+asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "ingest", "eval"]

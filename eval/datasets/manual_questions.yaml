@@ -1,0 +1,72 @@
+# Perguntas escritas à mão, no estilo de quem usa a documentação (curtas, às vezes em português).
+# `docs` indica em que página(s) a resposta deve estar. O build_golden.py usa essas páginas para
+# redigir a resposta de referência e marcar os chunks relevantes; depois o resultado é revisado.
+
+manual:
+  - {q: "How do I pause a LangGraph graph to wait for human approval and then resume it?", docs: [doc-langgraph-interrupts]}
+  - {q: "What do I need to configure for interrupt() to work in LangGraph?", docs: [doc-langgraph-interrupts]}
+  - {q: "como faço pra rodar o mesmo nó em paralelo pra cada item de uma lista no langgraph?", docs: [doc-langgraph-graph-api-send-command]}
+  - {q: "What's the difference between returning a Command and using conditional edges in LangGraph?", docs: [doc-langgraph-graph-api-send-command, doc-langgraph-graph-api]}
+  - {q: "What is a reducer in LangGraph state and when do I need one?", docs: [doc-langgraph-graph-api-state, doc-langgraph-graph-api]}
+  - {q: "I get GRAPH_RECURSION_LIMIT in LangGraph. What does it mean and how do I fix it?", docs: [doc-langgraph-errors-graph-recursion-limit]}
+  - {q: "o que causa o erro INVALID_CONCURRENT_GRAPH_UPDATE no langgraph?", docs: [doc-langgraph-errors-invalid-concurrent-graph-update]}
+  - {q: "What stream modes does LangGraph support and what does each one return?", docs: [doc-langgraph-streaming]}
+  - {q: "How can I emit custom data from inside a LangGraph node while streaming?", docs: [doc-langgraph-streaming]}
+  - {q: "What's the difference between a checkpointer and a store in LangGraph?", docs: [doc-langgraph-persistence, doc-langgraph-checkpointers, doc-langgraph-stores]}
+  - {q: "What is a thread_id used for in LangGraph persistence?", docs: [doc-langgraph-persistence, doc-langgraph-checkpointers]}
+  - {q: "como voltar para um checkpoint antigo e reexecutar o grafo a partir dele (time travel)?", docs: [doc-langgraph-use-time-travel]}
+  - {q: "How do I add a subgraph as a node when the parent and the subgraph have different state schemas?", docs: [doc-langgraph-use-subgraphs]}
+  - {q: "When should I use the LangGraph Functional API instead of the Graph API?", docs: [doc-langgraph-functional-api]}
+  - {q: "How do I configure a retry policy for a node in LangGraph?", docs: [doc-langgraph-fault-tolerance, doc-langgraph-graph-api-nodes]}
+  - {q: "How do I draw or visualize my LangGraph graph?", docs: [doc-langgraph-graph-api-visualize]}
+  - {q: "How do I test a single node of a LangGraph graph in isolation?", docs: [doc-langgraph-test]}
+  - {q: "What goes in the langgraph.json file?", docs: [doc-langgraph-application-structure]}
+  - {q: "How do I run a LangGraph app locally with the dev server?", docs: [doc-langgraph-local-server]}
+  - {q: "What is a super-step in LangGraph's Pregel runtime?", docs: [doc-langgraph-pregel, doc-langgraph-graph-api]}
+  - {q: "como adicionar memória de curto prazo (histórico da conversa) a um grafo do langgraph?", docs: [doc-langgraph-add-memory]}
+  - {q: "How do I trim or summarize the message history so my LangGraph agent does not exceed the context window?", docs: [doc-langgraph-add-memory]}
+  - {q: "What is the difference between a workflow and an agent according to the LangGraph docs?", docs: [doc-langgraph-workflows-agents]}
+  - {q: "How do I create an agent with create_agent in LangChain and give it tools?", docs: [doc-langchain-agents]}
+  - {q: "How do I get structured output from a LangChain agent?", docs: [doc-langchain-structured-output]}
+  - {q: "What is middleware in LangChain agents and what hooks can it use?", docs: [doc-langchain-middleware-overview, doc-langchain-middleware-custom]}
+  - {q: "How do I connect a LangChain agent to MCP servers?", docs: [doc-langchain-mcp-index, doc-langchain-mcp-connections, doc-langchain-mcp-tools]}
+  - {q: "qual a diferença entre o padrão de subagents e o de handoffs em sistemas multi-agente do langchain?", docs: [doc-langchain-multi-agent-index, doc-langchain-multi-agent-subagents, doc-langchain-multi-agent-handoffs]}
+  - {q: "How do I add human-in-the-loop approval for tool calls in a LangChain agent?", docs: [doc-langchain-human-in-the-loop]}
+  - {q: "What is a deep agent and what built-in capabilities does the deepagents library give it?", docs: [doc-deepagents-overview]}
+
+# Premissa falsa: a pergunta assume uma API, um parâmetro ou um comportamento que não existe.
+# A resposta certa aponta que a documentação não sustenta a premissa, em vez de inventar.
+trap:
+  - {q: "How do I set the max_parallel_sends parameter on StateGraph to limit Send fan-out?", note: "StateGraph has no max_parallel_sends parameter."}
+  - {q: "What is the default value of the auto_checkpoint_interval argument of StateGraph.compile()?", note: "compile() has no auto_checkpoint_interval argument."}
+  - {q: "How do I enable LangGraph's built-in GraphQL API endpoint?", note: "LangGraph does not ship a GraphQL API."}
+  - {q: "Why does LangGraph require every node to be an async function?", note: "False premise: nodes can be sync or async."}
+  - {q: "Which LangGraph stream mode returns the embeddings of each node's output?", note: "No stream mode returns embeddings."}
+  - {q: "How do I use the @langgraph.cron decorator to schedule a node to run every hour?", note: "There is no @langgraph.cron decorator."}
+  - {q: "Since interrupt() works without a checkpointer, how do I resume the graph afterwards?", note: "False premise: interrupts require a checkpointer."}
+  - {q: "How do I migrate my graph from LangGraph's deprecated YAML graph definition format to Python?", note: "LangGraph has no YAML graph definition format."}
+  - {q: "What is the name of the LangChain middleware that automatically translates all tool outputs to Portuguese?", note: "No such middleware exists."}
+  - {q: "How do I configure the reranker built into LangGraph's InMemoryStore?", note: "InMemoryStore has no built-in reranker."}
+  - {q: "como configuro o parâmetro temperature direto no add_node do LangGraph?", note: "add_node has no temperature parameter; temperature belongs to the model."}
+  - {q: "Why was the Send API removed in LangGraph 1.0 and what replaced it?", note: "False premise: Send was not removed."}
+  - {q: "How do I turn on the automatic unit test generation feature of LangGraph Studio?", note: "Studio has no automatic unit test generation."}
+  - {q: "What quota of free GPU hours does the deepagents library include for running subagents?", note: "deepagents is a library and includes no GPU quota."}
+  - {q: "Which argument of create_agent makes the agent fine-tune the model on the conversation after each run?", note: "create_agent has no fine-tuning argument."}
+
+# Fora do escopo da documentação. A resposta certa é uma recusa educada.
+out_of_scope:
+  - "What is the capital of France?"
+  - "Qual é a melhor receita de bolo de cenoura?"
+  - "Who won the FIFA World Cup in 2002?"
+  - "How do I configure a Kubernetes ingress with TLS?"
+  - "Write a poem about the ocean."
+  - "What is the current price of Bitcoin?"
+  - "como declarar imposto de renda como MEI?"
+  - "How do I center a div with CSS flexbox?"
+  - "What are the symptoms of vitamin D deficiency?"
+  - "Explain the rules of chess castling."
+  - "How do I write a Dockerfile for a Django application?"
+  - "Quem descobriu o Brasil?"
+  - "What is the time complexity of quicksort?"
+  - "How do I train a ResNet image classifier in PyTorch?"
+  - "Recommend a good sci-fi movie for tonight."
