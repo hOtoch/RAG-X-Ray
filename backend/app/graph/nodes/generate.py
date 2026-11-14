@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-import time
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -54,18 +53,19 @@ def extract_citations(answer: str, chunks: list[ScoredChunk]) -> list[Citation]:
     ]
 
 
+FINAL_ANSWER_TAG = "final_answer"
+
+
 def generate_answer(query: str, chunks: list[ScoredChunk], tier: Tier):
     """Chama o modelo do nível pedido. Retorna (resposta, citações, uso)."""
-    start = time.perf_counter()
     messages = [
         SystemMessage(SYSTEM_PROMPT),
         HumanMessage(f"Context passages:\n\n{format_context(chunks)}\n\nQuestion: {query}"),
     ]
-    message = get_llm(tier).invoke(messages)
-    answer = message.text if hasattr(message, "text") and isinstance(message.text, str) else str(message.content)
-    usage = usage_from_message(
-        "generate", get_settings().model_for(tier), message, (time.perf_counter() - start) * 1000
-    )
+    # A tag marca esta chamada como a resposta final: só os tokens dela vão para o stream da interface.
+    message = get_llm(tier).invoke(messages, config={"tags": [FINAL_ANSWER_TAG]})
+    answer = message.text if isinstance(getattr(message, "text", None), str) else str(message.content)
+    usage = usage_from_message("generate", get_settings().model_for(tier), message)
     return answer, extract_citations(answer, chunks), usage
 
 

@@ -32,7 +32,7 @@ class FakeLLM:
         self.text = text
         self.calls: list = []
 
-    def invoke(self, messages):
+    def invoke(self, messages, config=None):
         self.calls.append(messages)
         return AIMessage(content=self.text, usage_metadata={"input_tokens": 50, "output_tokens": 7, "total_tokens": 57})
 

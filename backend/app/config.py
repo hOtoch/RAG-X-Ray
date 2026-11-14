@@ -51,6 +51,12 @@ class Settings(BaseSettings):
 
     redis_url: str = "redis://localhost:6379/0"
 
+    # Langfuse (tracing). Sem as chaves, o tracing fica desligado.
+    langfuse_enabled: bool = True
+    langfuse_host: str = "http://localhost:3000"
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+
     # Retrieval e orçamento
     retrieval_top_k: int = 5
     max_retries: int = 2

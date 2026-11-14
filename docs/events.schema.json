@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RAG X-Ray SSE events",
+  "event": {
+    "description": "Envelope comum a todos os eventos.",
+    "properties": {
+      "request_id": {
+        "title": "Request Id",
+        "type": "string"
+      },
+      "seq": {
+        "description": "Ordem monot\u00f4nica dentro do request",
+        "minimum": 0,
+        "title": "Seq",
+        "type": "integer"
+      },
+      "ts": {
+        "format": "date-time",
+        "title": "Ts",
+        "type": "string"
+      },
+      "node": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Id do n\u00f3 no grafo; None em eventos do request inteiro",
+        "title": "Node"
+      },
+      "type": {
+        "enum": [
+          "node_start",
+          "node_end",
+          "token",
+          "data",
+          "error",
+          "done"
+        ],
+        "title": "Type",
+        "type": "string"
+      },
+      "payload": {
+        "additionalProperties": true,
+        "title": "Payload",
+        "type": "object"
+      }
+    },
+    "required": [
+      "request_id",
+      "seq",
+      "ts",
+      "type"
+    ],
+    "title": "Event",
+    "type": "object"
+  },
+  "payloads": {
+    "node_end": {
+      "properties": {
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "number"
+        },
+        "tokens_in": {
+          "default": 0,
+          "title": "Tokens In",
+          "type": "integer"
+        },
+        "tokens_out": {
+          "default": 0,
+          "title": "Tokens Out",
+          "type": "integer"
+        },
+        "tokens_cached": {
+          "default": 0,
+          "title": "Tokens Cached",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        }
+      },
+      "required": [
+        "latency_ms"
+      ],
+      "title": "NodeEndPayload",
+      "type": "object"
+    },
+    "token": {
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "TokenPayload",
+      "type": "object"
+    },
+    "error": {
+      "properties": {
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "title": "ErrorPayload",
+      "type": "object"
+    },
+    "done": {
+      "$defs": {
+        "CitationPayload": {
+          "properties": {
+            "n": {
+              "title": "N",
+              "type": "integer"
+            },
+            "chunk_id": {
+              "title": "Chunk Id",
+              "type": "string"
+            },
+            "title": {
+              "title": "Title",
+              "type": "string"
+            },
+            "section": {
+              "title": "Section",
+              "type": "string"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            }
+          },
+          "required": [
+            "n",
+            "chunk_id",
+            "title",
+            "section",
+            "url"
+          ],
+          "title": "CitationPayload",
+          "type": "object"
+        }
+      },
+      "properties": {
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/CitationPayload"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "total_cost_usd": {
+          "title": "Total Cost Usd",
+          "type": "number"
+        },
+        "total_latency_ms": {
+          "title": "Total Latency Ms",
+          "type": "number"
+        },
+        "counterfactual_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Counterfactual Cost Usd"
+        }
+      },
+      "required": [
+        "answer",
+        "total_cost_usd",
+        "total_latency_ms"
+      ],
+      "title": "DonePayload",
+      "type": "object"
+    }
+  },
+  "data_payloads": {
+    "retrieve": {
+      "$defs": {
+        "RetrievedChunk": {
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "title": {
+              "title": "Title",
+              "type": "string"
+            },
+            "section": {
+              "title": "Section",
+              "type": "string"
+            },
+            "url": {
+              "title": "Url",
+              "type": "string"
+            },
+            "score": {
+              "title": "Score",
+              "type": "number"
+            },
+            "dense_rank": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Dense Rank"
+            },
+            "bm25_rank": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Bm25 Rank"
+            },
+            "rrf_rank": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Rrf Rank"
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "section",
+            "url",
+            "score"
+          ],
+          "title": "RetrievedChunk",
+          "type": "object"
+        }
+      },
+      "properties": {
+        "chunks": {
+          "items": {
+            "$ref": "#/$defs/RetrievedChunk"
+          },
+          "title": "Chunks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "chunks"
+      ],
+      "title": "RetrieveData",
+      "type": "object"
+    },
+    "rerank": {
+      "$defs": {
+        "RerankedChunk": {
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "rerank_rank": {
+              "title": "Rerank Rank",
+              "type": "integer"
+            },
+            "score": {
+              "title": "Score",
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "rerank_rank",
+            "score"
+          ],
+          "title": "RerankedChunk",
+          "type": "object"
+        }
+      },
+      "properties": {
+        "chunks": {
+          "items": {
+            "$ref": "#/$defs/RerankedChunk"
+          },
+          "title": "Chunks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "chunks"
+      ],
+      "title": "RerankData",
+      "type": "object"
+    },
+    "router": {
+      "properties": {
+        "route": {
+          "enum": [
+            "trivial",
+            "out_of_scope",
+            "simple_rag",
+            "multi_hop"
+          ],
+          "title": "Route",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "route",
+        "reason",
+        "confidence"
+      ],
+      "title": "RouterData",
+      "type": "object"
+    },
+    "cache_exact": {
+      "properties": {
+        "hit": {
+          "title": "Hit",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "hit"
+      ],
+      "title": "CacheExactData",
+      "type": "object"
+    },
+    "cache_semantic": {
+      "properties": {
+        "hit": {
+          "title": "Hit",
+          "type": "boolean"
+        },
+        "similarity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Similarity"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        }
+      },
+      "required": [
+        "hit",
+        "threshold"
+      ],
+      "title": "CacheSemanticData",
+      "type": "object"
+    },
+    "embedding_map": {
+      "properties": {
+        "query_xy": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Query Xy",
+          "type": "array"
+        },
+        "hit_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hit Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "query_xy",
+        "hit_ids"
+      ],
+      "title": "EmbeddingMapData",
+      "type": "object"
+    },
+    "groundedness_check": {
+      "properties": {
+        "grounded": {
+          "title": "Grounded",
+          "type": "boolean"
+        },
+        "unsupported_claims": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unsupported Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "grounded"
+      ],
+      "title": "GroundednessData",
+      "type": "object"
+    }
+  },
+  "models": [
+    "CacheExactData",
+    "CacheSemanticData",
+    "DonePayload",
+    "EmbeddingMapData",
+    "ErrorPayload",
+    "Event",
+    "GroundednessData",
+    "NodeEndPayload",
+    "RerankData",
+    "RetrieveData",
+    "RouterData",
+    "TokenPayload"
+  ]
+}
