@@ -1,6 +1,6 @@
 # ADR-0002: pgvector como banco vetorial
 
-- **Status:** Proposto
+- **Status:** Aceito
 - **Data:** 2026-11-09
 
 ## Contexto
