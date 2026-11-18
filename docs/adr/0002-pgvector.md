@@ -11,7 +11,7 @@ Restrições:
 
 - Operação simples: a infra local deve subir com um `docker compose` (issue #5).
 - Deploy barato na fase 8 (Fly, Railway ou Render).
-- O corpus é pequeno para padrões de produção: cerca de 773 páginas, dezenas de milhares de chunks no máximo.
+- O corpus é pequeno para padrões de produção: 773 arquivos, que viraram 743 documentos e 10.800 chunks (ADR-0001).
 - A mesma base precisa guardar metadados dos chunks, eventos de trace (`events`, issue da F2) e o contador de custo diário.
 
 ## Decisão

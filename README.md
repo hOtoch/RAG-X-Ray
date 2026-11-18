@@ -89,13 +89,14 @@ cd frontend && npm install && npm run dev -- --port 3001
 - Testes: `cd backend && uv run pytest` (85 testes, sem rede e sem LLM real)
 - Eval: `uv run --project backend python -m eval.run_eval --pipeline v3` (na raiz do repositório)
 - Gravar demos do replay: `cd backend && uv run python scripts/record_demos.py --pipeline v3`
+- Mapa do corpus (UMAP, sem API, ~2 min): `cd backend && uv sync --group map && uv run python -m ingest.corpus_map`
 
 ## Estrutura
 
 ```
 backend/    API FastAPI (app/), grafo LangGraph (app/graph/), ingestão (ingest/) e scripts
 eval/       golden dataset, juiz, run_eval, bench de retrieval, calibração do cache e do juiz, gate da CI
-frontend/   interface Next.js: grafo ao vivo, linha do tempo, ranking, citações e replay
+frontend/   interface Next.js: grafo ao vivo, linha do tempo, ranking, mapa do corpus, citações, replay e comparação
 configs/    versões do pipeline e tabela de preços dos modelos
 docs/       roadmap, ADRs, contrato de eventos e modos de falha
 ```
@@ -111,6 +112,9 @@ docs/       roadmap, ADRs, contrato de eventos e modos de falha
 | [0005](docs/adr/0005-busca-lexical-bm25.md) | BM25 em memória e RRF |
 | [0006](docs/adr/0006-reranker.md) | Reranker local jina-turbo, com ressalva |
 | [0007](docs/adr/0007-cache-semantico-theta.md) | Cache exato sempre; semântico só com θ = 0,98 |
+| [0008](docs/adr/0008-mapa-umap.md) | Mapa UMAP na ingestão; pergunta posicionada pelos vizinhos |
+
+Status, evidências e o que ainda falta medir: [docs/adr/README.md](docs/adr/README.md).
 
 ## Licença
 

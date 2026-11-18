@@ -48,13 +48,46 @@ def trace_config(request_id: str, pipeline: str, question: str) -> dict[str, Any
     return config
 
 
+def genai_attributes(usage: dict[str, Any]) -> dict[str, Any]:
+    """Atributos do nó nas convenções semânticas GenAI do OpenTelemetry (gen_ai.*), mais os nossos (ragxray.*).
+
+    Nós sem chamada de modelo (rerank local, compressão, cache) só levam os atributos ragxray.*. O retrieve
+    chama o modelo de embeddings, então a operação é `embeddings`; os demais nós com modelo são `chat`.
+    """
+    s = get_settings()
+    attrs: dict[str, Any] = {
+        "ragxray.latency_ms": round(float(usage.get("latency_ms", 0.0)), 1),
+        "ragxray.cost_usd": float(usage.get("cost_usd", 0.0)),
+        "ragxray.tokens_cached": int(usage.get("tokens_cached", 0)),
+    }
+    model = usage.get("model")
+    if model:
+        embeddings = model == s.embedding_model
+        attrs |= {
+            "gen_ai.operation.name": "embeddings" if embeddings else "chat",
+            "gen_ai.provider.name": s.embedding_provider if embeddings else s.llm_provider,
+            "gen_ai.request.model": model,
+            "gen_ai.usage.input_tokens": int(usage.get("tokens_in", 0)),
+        }
+        if not embeddings:
+            attrs["gen_ai.usage.output_tokens"] = int(usage.get("tokens_out", 0))
+    return attrs
+
+
 def annotate_node(usage: dict[str, Any]) -> None:
-    """Grava tokens, custo e modelo do nó no span atual (o span do nó, criado pelo handler)."""
+    """Grava tokens, custo e modelo do nó no span atual (o span do nó, criado pelo handler): como metadata
+    no Langfuse e como atributos OpenTelemetry, para qualquer backend OTel ler sem conhecer o projeto."""
     client = _client()
     if client is None:
         return
+    attrs = genai_attributes(usage)
     try:
-        client.update_current_span(metadata={"usage": usage})
+        client.update_current_span(metadata={"usage": usage, "otel": attrs})
+        from opentelemetry import trace
+
+        span = trace.get_current_span()
+        if span.is_recording():
+            span.set_attributes(attrs)
     except Exception:  # tracing nunca pode derrubar um request
         pass
 

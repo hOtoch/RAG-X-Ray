@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AnswerWithCitations } from "@/components/AnswerWithCitations";
+import { CompareMode } from "@/components/CompareMode";
 import { EmbeddingMap } from "@/components/EmbeddingMap";
 import { GraphView } from "@/components/GraphView";
 import { RankingPanel } from "@/components/RankingPanel";
@@ -21,6 +22,7 @@ const EXAMPLES = [
 
 export default function Home() {
   const [mode, setMode] = useState<"replay" | "live">("replay");
+  const [view, setView] = useState<"single" | "compare">("single");
   const [pipelines, setPipelines] = useState<PipelineInfo[]>([]);
   const [pipeline, setPipeline] = useState("v3");
   const [topology, setTopology] = useState<GraphTopology | null>(null);
@@ -88,88 +90,104 @@ export default function Home() {
           </h1>
           <p>Cada etapa do agente, ao vivo: cache, roteamento, retrieval, rerank, geração e verificação.</p>
         </div>
-        <div className="mode-toggle" role="tablist">
-          <button role="tab" aria-selected={mode === "replay"} onClick={() => setMode("replay")}>
-            Replay
-          </button>
-          <button role="tab" aria-selected={mode === "live"} onClick={() => setMode("live")}>
-            Ao vivo
-          </button>
+        <div className="toggles">
+          <div className="mode-toggle" role="tablist" aria-label="Visualização">
+            <button role="tab" aria-selected={view === "single"} onClick={() => setView("single")}>
+              Uma execução
+            </button>
+            <button role="tab" aria-selected={view === "compare"} onClick={() => setView("compare")}>
+              Comparar
+            </button>
+          </div>
+          <div className="mode-toggle" role="tablist" aria-label="Origem">
+            <button role="tab" aria-selected={mode === "replay"} onClick={() => setMode("replay")}>
+              Replay
+            </button>
+            <button role="tab" aria-selected={mode === "live"} onClick={() => setMode("live")}>
+              Ao vivo
+            </button>
+          </div>
         </div>
       </header>
 
       {backendError && mode === "live" && <p className="banner">{backendError}</p>}
 
-      <section className="ask">
-        {mode === "live" ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (question.trim()) runLive();
-            }}
-          >
-            <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Pergunte sobre LangGraph…" />
-            <select value={pipeline} onChange={(e) => setPipeline(e.target.value)} aria-label="Versão do pipeline">
-              {pipelines.map((p) => (
-                <option key={p.name} value={p.name} title={p.description}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-            <button type="submit" disabled={status === "running"}>
-              {status === "running" ? "Rodando…" : "Perguntar"}
-            </button>
-          </form>
-        ) : (
-          <div className="demo-list">
-            {demos.length === 0 && <span className="text-[var(--muted)]">Nenhum trace gravado ainda.</span>}
-            {demos.map((d) => (
-              <button key={d.request_id} onClick={() => runReplay(d)} disabled={status === "running"} title={d.note}>
-                <span className="demo-tag">{d.label}</span>
-                {d.question}
-              </button>
-            ))}
-          </div>
-        )}
-        {mode === "live" && (
-          <div className="examples">
-            {EXAMPLES.map((q) => (
-              <button key={q} onClick={() => setQuestion(q)}>
-                {q}
-              </button>
-            ))}
-          </div>
-        )}
-      </section>
+      {view === "compare" ? (
+        <CompareMode mode={mode} pipelines={pipelines} demos={demos} question={question} setQuestion={setQuestion} />
+      ) : (
+        <>
+          <section className="ask">
+            {mode === "live" ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (question.trim()) runLive();
+                }}
+              >
+                <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Pergunte sobre LangGraph…" />
+                <select value={pipeline} onChange={(e) => setPipeline(e.target.value)} aria-label="Versão do pipeline">
+                  {pipelines.map((p) => (
+                    <option key={p.name} value={p.name} title={p.description}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <button type="submit" disabled={status === "running"}>
+                  {status === "running" ? "Rodando…" : "Perguntar"}
+                </button>
+              </form>
+            ) : (
+              <div className="demo-list">
+                {demos.length === 0 && <span className="text-[var(--muted)]">Nenhum trace gravado ainda.</span>}
+                {demos.map((d) => (
+                  <button key={d.request_id} onClick={() => runReplay(d)} disabled={status === "running"} title={d.note}>
+                    <span className="demo-tag">{d.label}</span>
+                    {d.question}
+                  </button>
+                ))}
+              </div>
+            )}
+            {mode === "live" && (
+              <div className="examples">
+                {EXAMPLES.map((q) => (
+                  <button key={q} onClick={() => setQuestion(q)}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
 
-      <RouterExplainer />
+          <RouterExplainer />
 
-      <section className="grid-main">
-        <div className="panel panel-graph">
-          <h2>
-            Grafo <small>{mode === "replay" ? replayTopology?.pipeline ?? "" : pipeline}</small>
-          </h2>
-          <GraphView topology={mode === "replay" ? replayTopology : topology} />
-        </div>
-        <div className="panel panel-answer">
-          <h2>Resposta</h2>
-          <AnswerWithCitations live={mode === "live"} />
-        </div>
-        <div className="panel panel-timeline">
-          <h2>Linha do tempo</h2>
-          <TraceTimeline />
-        </div>
-        <div className="panel panel-ranking">
-          <h2>Ranking dos trechos</h2>
-          <RankingPanel />
-        </div>
-        <div className="panel panel-map">
-          <h2>
-            Mapa do corpus <small>UMAP dos embeddings</small>
-          </h2>
-          <EmbeddingMap />
-        </div>
-      </section>
+          <section className="grid-main">
+            <div className="panel panel-graph">
+              <h2>
+                Grafo <small>{mode === "replay" ? replayTopology?.pipeline ?? "" : pipeline}</small>
+              </h2>
+              <GraphView topology={mode === "replay" ? replayTopology : topology} />
+            </div>
+            <div className="panel panel-answer">
+              <h2>Resposta</h2>
+              <AnswerWithCitations live={mode === "live"} />
+            </div>
+            <div className="panel panel-timeline">
+              <h2>Linha do tempo</h2>
+              <TraceTimeline />
+            </div>
+            <div className="panel panel-ranking">
+              <h2>Ranking dos trechos</h2>
+              <RankingPanel />
+            </div>
+            <div className="panel panel-map">
+              <h2>
+                Mapa do corpus <small>UMAP dos embeddings</small>
+              </h2>
+              <EmbeddingMap />
+            </div>
+          </section>
+        </>
+      )}
     </main>
   );
 }
