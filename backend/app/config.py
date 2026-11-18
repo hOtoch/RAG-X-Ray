@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     embedding_model: str
     embedding_dim: int
 
+    # Reranker (cross-encoder local, via fastembed)
+    reranker_model: str = ""
+
     # Postgres
     postgres_host: str = "localhost"
     postgres_port: int = 5433
@@ -50,6 +53,7 @@ class Settings(BaseSettings):
     postgres_password: str = "ragxray"
 
     redis_url: str = "redis://localhost:6379/0"
+    cache_ttl_seconds: int = 7 * 24 * 3600
 
     # Langfuse (tracing). Sem as chaves, o tracing fica desligado.
     langfuse_enabled: bool = True
@@ -59,6 +63,7 @@ class Settings(BaseSettings):
 
     # Retrieval e orçamento
     retrieval_top_k: int = 5
+    hnsw_ef_search: int = 200
     max_retries: int = 2
     request_budget_usd: float = 0.05
 

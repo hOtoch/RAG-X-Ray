@@ -1,0 +1,203 @@
+{
+  "embedding_model": "text-embedding-3-small",
+  "n_pairs": 120,
+  "n_same": 60,
+  "n_different": 60,
+  "max_false_positive_rate": 0.02,
+  "chosen": {
+    "theta": 0.98,
+    "hit_rate": 0.0,
+    "false_positive_rate": 0.0
+  },
+  "paraphrase_hit_rate_by_language_at_chosen": {
+    "pt": 0.0,
+    "en": 0.0
+  },
+  "similarity_same_answer": {
+    "mean": 0.8921,
+    "min": 0.7147
+  },
+  "similarity_different": {
+    "mean": 0.8287,
+    "max": 0.979
+  },
+  "curve": [
+    {
+      "theta": 0.7,
+      "hit_rate": 1.0,
+      "false_positive_rate": 0.9
+    },
+    {
+      "theta": 0.71,
+      "hit_rate": 1.0,
+      "false_positive_rate": 0.8667
+    },
+    {
+      "theta": 0.72,
+      "hit_rate": 0.9833,
+      "false_positive_rate": 0.85
+    },
+    {
+      "theta": 0.73,
+      "hit_rate": 0.9833,
+      "false_positive_rate": 0.8333
+    },
+    {
+      "theta": 0.74,
+      "hit_rate": 0.9833,
+      "false_positive_rate": 0.8
+    },
+    {
+      "theta": 0.75,
+      "hit_rate": 0.9833,
+      "false_positive_rate": 0.7833
+    },
+    {
+      "theta": 0.76,
+      "hit_rate": 0.9667,
+      "false_positive_rate": 0.7667
+    },
+    {
+      "theta": 0.77,
+      "hit_rate": 0.95,
+      "false_positive_rate": 0.7333
+    },
+    {
+      "theta": 0.78,
+      "hit_rate": 0.9333,
+      "false_positive_rate": 0.7
+    },
+    {
+      "theta": 0.79,
+      "hit_rate": 0.9167,
+      "false_positive_rate": 0.65
+    },
+    {
+      "theta": 0.8,
+      "hit_rate": 0.9,
+      "false_positive_rate": 0.6333
+    },
+    {
+      "theta": 0.81,
+      "hit_rate": 0.8667,
+      "false_positive_rate": 0.6
+    },
+    {
+      "theta": 0.82,
+      "hit_rate": 0.8167,
+      "false_positive_rate": 0.5833
+    },
+    {
+      "theta": 0.83,
+      "hit_rate": 0.7833,
+      "false_positive_rate": 0.5333
+    },
+    {
+      "theta": 0.84,
+      "hit_rate": 0.7667,
+      "false_positive_rate": 0.5167
+    },
+    {
+      "theta": 0.85,
+      "hit_rate": 0.7333,
+      "false_positive_rate": 0.4833
+    },
+    {
+      "theta": 0.86,
+      "hit_rate": 0.7167,
+      "false_positive_rate": 0.4833
+    },
+    {
+      "theta": 0.87,
+      "hit_rate": 0.7167,
+      "false_positive_rate": 0.45
+    },
+    {
+      "theta": 0.88,
+      "hit_rate": 0.6667,
+      "false_positive_rate": 0.4
+    },
+    {
+      "theta": 0.89,
+      "hit_rate": 0.65,
+      "false_positive_rate": 0.3167
+    },
+    {
+      "theta": 0.9,
+      "hit_rate": 0.6,
+      "false_positive_rate": 0.2833
+    },
+    {
+      "theta": 0.91,
+      "hit_rate": 0.5333,
+      "false_positive_rate": 0.2
+    },
+    {
+      "theta": 0.92,
+      "hit_rate": 0.4667,
+      "false_positive_rate": 0.1667
+    },
+    {
+      "theta": 0.93,
+      "hit_rate": 0.3667,
+      "false_positive_rate": 0.1
+    },
+    {
+      "theta": 0.94,
+      "hit_rate": 0.2667,
+      "false_positive_rate": 0.1
+    },
+    {
+      "theta": 0.95,
+      "hit_rate": 0.15,
+      "false_positive_rate": 0.0833
+    },
+    {
+      "theta": 0.96,
+      "hit_rate": 0.0167,
+      "false_positive_rate": 0.05
+    },
+    {
+      "theta": 0.97,
+      "hit_rate": 0.0,
+      "false_positive_rate": 0.0333
+    },
+    {
+      "theta": 0.98,
+      "hit_rate": 0.0,
+      "false_positive_rate": 0.0
+    },
+    {
+      "theta": 0.99,
+      "hit_rate": 0.0,
+      "false_positive_rate": 0.0
+    }
+  ],
+  "hardest_false_positives": [
+    {
+      "a": "How can you stream LLM tokens with metadata using LangGraph, and what stream mode and version should you use?",
+      "b": "How do you stream LLM tokens without metadata in LangGraph, and which stream mode and version should be used for that?",
+      "similarity": 0.979
+    },
+    {
+      "a": "In the DeepAgents RubricMiddleware for LangGraph, what happens if the grader reaches the maximum number of iterations without producing a 'satisfied' verdict?",
+      "b": "In the DeepAgents RubricMiddleware for LangGraph, what occurs if the grader produces a 'satisfied' verdict before reaching the maximum number of iterations?",
+      "similarity": 0.9783
+    },
+    {
+      "a": "How do you enable programmatic tool calling (PTC) for a LangChain agent using the CodeInterpreterMiddleware?",
+      "b": "How do you enable programmatic tool calling (PTC) for a LangChain agent using the ToolCallingMiddleware instead of the CodeInterpreterMiddleware?",
+      "similarity": 0.9623
+    },
+    {
+      "a": "In the DeepAgents config file, what does setting `warnings.cache_prompt` to \"off\" do?",
+      "b": "In the DeepAgents config file, what is the effect of setting `warnings.cache_prompt` to \"on\"?",
+      "similarity": 0.953
+    },
+    {
+      "a": "What are two key differences between Deep Agents and the Claude Agent SDK regarding agent execution environments and server management?",
+      "b": "What are two similarities between Deep Agents and the Claude Agent SDK when it comes to agent execution environments and server management?",
+      "similarity": 0.952
+    }
+  ]
+}

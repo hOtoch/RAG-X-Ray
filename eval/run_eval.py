@@ -29,6 +29,19 @@ from eval.metrics.retrieval import doc_level, mrr, ndcg_at_k, recall_at_k
 RESULTS = Path(__file__).parent / "results"
 PARTIAL = RESULTS / ".partial"
 K = 5
+# Rota esperada por tipo de pergunta. Armadilha precisa de retrieval para revelar a premissa falsa.
+EXPECTED_ROUTE = {"simple": "simple_rag", "multi_hop": "multi_hop", "out_of_scope": "out_of_scope", "trap": "rag"}
+RAG_ROUTES = ("simple_rag", "multi_hop")
+
+
+def route_ok(row: dict) -> bool:
+    expected = row["expected_route"]
+    return row["route"] in RAG_ROUTES if expected == "rag" else row["route"] == expected
+
+
+def needs_rag_ok(row: dict) -> bool:
+    """Acerto mais grosso: o router mandou para retrieval quem precisa e tirou quem não precisa."""
+    return (row["route"] in RAG_ROUTES) == (row["expected_route"] != "out_of_scope")
 
 
 def stratified_subset(items: list[GoldenItem], n: int) -> list[GoldenItem]:
@@ -58,6 +71,14 @@ def evaluate_item(item: GoldenItem, pipeline: str, use_judge: bool) -> dict:
         "retrieved_ids": retrieved,
         "cited_ids": [c.chunk_id for c in result.citations],
         "model_tier_used": result.model_tier_used,
+        "route": result.route,
+        "expected_route": EXPECTED_ROUTE[item.type],
+        "grounded": result.grounded,
+        "gave_up": result.gave_up,
+        "escalations": result.escalations,
+        "retries": result.retries,
+        "cache_hit": result.cache_hit,
+        "counterfactual_cost_usd": result.counterfactual_cost_usd,
         "cost_usd": result.total_cost_usd,
         "latency_ms": result.total_latency_ms,
         "tokens_in": sum(u.tokens_in for u in result.usage),
@@ -126,7 +147,34 @@ def aggregate(rows: list[dict]) -> dict:
             "judge_cost_usd": round(sum(r["judge"]["judge_cost_usd"] for r in rows if "judge" in r), 4),
         },
     }
+    routed = [r for r in rows if r.get("route")]
+    if routed:
+        out["router"] = {
+            "accuracy": mean([float(route_ok(r)) for r in routed]),
+            "needs_rag_accuracy": mean([float(needs_rag_ok(r)) for r in routed]),
+            "distribution": {
+                route: sum(r["route"] == route for r in routed) for route in sorted({r["route"] for r in routed})
+            },
+        }
+    with_cf = [r for r in rows if r.get("counterfactual_cost_usd") is not None]
+    if with_cf:
+        cascade = sum(r["cost_usd"] for r in with_cf)
+        only_large = sum(r["counterfactual_cost_usd"] for r in with_cf)
+        out["operational"]["counterfactual_cost_per_query_usd"] = round(only_large / len(with_cf), 6)
+        out["operational"]["savings_vs_large_only"] = round(1 - cascade / only_large, 4) if only_large else None
+    out["operational"]["gave_up_rate"] = mean([float(bool(r.get("gave_up"))) for r in rows])
+    out["operational"]["escalation_rate"] = mean([float(r.get("escalations", 0) > 0) for r in rows])
     return out
+
+
+def confusion(rows: list[dict]) -> dict[str, dict[str, int]]:
+    """Matriz de confusão do router: tipo da pergunta -> rota escolhida."""
+    table: dict[str, dict[str, int]] = {}
+    for r in rows:
+        if r.get("route"):
+            table.setdefault(r["type"], {}).setdefault(r["route"], 0)
+            table[r["type"]][r["route"]] += 1
+    return table
 
 
 def git_commit() -> str:
@@ -203,6 +251,7 @@ def main() -> None:
         },
         "metrics": aggregate(rows),
         "metrics_by_type": by_type,
+        "router_confusion": confusion(rows),
         "questions": rows,
     }
     out_file = RESULTS / f"{name}.json"

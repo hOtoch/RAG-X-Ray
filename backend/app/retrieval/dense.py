@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from app.config import get_settings
 from app.db import get_pool
 from app.graph.state import ScoredChunk
 from app.llm.factory import get_embeddings
@@ -17,7 +18,10 @@ def embed_query(query: str) -> list[float]:
 
 def dense_search(query_vector: list[float], k: int) -> list[ScoredChunk]:
     vector = np.array(query_vector, dtype=np.float32)
-    with get_pool().connection() as conn:
+    with get_pool().connection() as conn, conn.transaction():
+        # O padrão do pgvector (ef_search=40) perdeu 3 pontos de recall@5 contra a busca exata neste corpus;
+        # com 200 o resultado fica igual ao exato (medido em eval/results/retrieval_bench.json).
+        conn.execute(f"SET LOCAL hnsw.ef_search = {int(get_settings().hnsw_ef_search)}")
         rows = conn.execute(
             f"SELECT {COLUMNS}, 1 - (embedding <=> %s) AS score FROM chunks ORDER BY embedding <=> %s LIMIT %s",
             (vector, vector, k),

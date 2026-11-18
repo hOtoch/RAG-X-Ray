@@ -40,7 +40,11 @@ class FakeLLM:
 @pytest.fixture
 def fakes(monkeypatch):
     llm = FakeLLM("Send runs nodes in parallel [1][3]. Unknown ref [9].")
-    prices = {"test-medium": ModelPrice(input=1.0, output=2.0), "test-embedding": ModelPrice(input=0.1)}
+    prices = {
+        "test-medium": ModelPrice(input=1.0, output=2.0),
+        "test-large": ModelPrice(input=10.0, output=20.0),
+        "test-embedding": ModelPrice(input=0.1),
+    }
     monkeypatch.setattr("app.llm.usage.get_prices", lambda: prices)
     monkeypatch.setattr("app.graph.nodes.generate.get_llm", lambda tier: llm)
     monkeypatch.setattr("app.retrieval.dense.embed_query", lambda q: [0.0] * 8)

@@ -20,10 +20,13 @@ dependencies = [
     "redis>=5.0",
     "numpy>=2.5.4",
     "langfuse>=5.2.0",
+    "rank-bm25>=0.2.2",
+    "fastembed>=0.9.1",
 ]
 
 [dependency-groups]
 dev = [
+    "fakeredis>=2.40.0",
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
     "ruff>=0.6",

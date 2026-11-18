@@ -1,0 +1,61 @@
+{
+  "dataset_hash": "54d2a9c3a54d",
+  "n_questions": 130,
+  "embedding_model": "text-embedding-3-small",
+  "strategies": {
+    "dense": {
+      "recall@5": 0.6867,
+      "doc_recall@5": 0.8885,
+      "recall@20": 0.8545,
+      "mrr": 0.6074,
+      "ndcg@5": 0.5806,
+      "latency_ms_p50": 134.8,
+      "latency_ms_p95": 143.5
+    },
+    "bm25": {
+      "recall@5": 0.6842,
+      "doc_recall@5": 0.9231,
+      "recall@20": 0.8681,
+      "mrr": 0.605,
+      "ndcg@5": 0.5771,
+      "latency_ms_p50": 32.7,
+      "latency_ms_p95": 58.7
+    },
+    "fts": {
+      "recall@5": 0.2122,
+      "doc_recall@5": 0.4808,
+      "recall@20": 0.4297,
+      "mrr": 0.2089,
+      "ndcg@5": 0.1717,
+      "latency_ms_p50": 98.9,
+      "latency_ms_p95": 213.4
+    },
+    "hybrid (dense + bm25)": {
+      "recall@5": 0.7454,
+      "doc_recall@5": 0.9423,
+      "recall@20": 0.9026,
+      "mrr": 0.6858,
+      "ndcg@5": 0.6481,
+      "latency_ms_p50": 168.3,
+      "latency_ms_p95": 196.4
+    },
+    "hybrid (dense + fts)": {
+      "recall@5": 0.6144,
+      "doc_recall@5": 0.8846,
+      "recall@20": 0.8282,
+      "mrr": 0.527,
+      "ndcg@5": 0.4962,
+      "latency_ms_p50": 235.3,
+      "latency_ms_p95": 348.6
+    },
+    "hybrid bm25 + rerank ms-marco-MiniLM-L-6-v2": {
+      "recall@5": 0.7097,
+      "doc_recall@5": 0.9423,
+      "recall@20": 0.9026,
+      "mrr": 0.699,
+      "ndcg@5": 0.6295,
+      "latency_ms_p50": 2433.4,
+      "latency_ms_p95": 3462.6
+    }
+  }
+}

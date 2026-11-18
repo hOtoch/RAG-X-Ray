@@ -83,3 +83,19 @@ def test_aggregate():
     assert m["generation"]["refusal_rate_trap_or_out_of_scope"] == 1.0
     assert m["operational"]["cost_per_query_usd"] == 0.004
     assert m["operational"]["judge_cost_usd"] == 0.03
+
+
+def test_cohen_kappa_by_hand():
+    import pytest
+
+    from eval.judge_calibration.calibrate import cohen_kappa
+
+    # 10 itens: concordam em 8. Avaliador A: 6 sim / 4 não; B: 6 sim / 4 não.
+    a = ["y"] * 6 + ["n"] * 4
+    b = ["y"] * 5 + ["n"] + ["y"] + ["n"] * 3
+    # observado 0,8; esperado 0,6*0,6 + 0,4*0,4 = 0,52; kappa = 0,28 / 0,48
+    assert cohen_kappa(a, b) == pytest.approx(0.28 / 0.48)
+    assert cohen_kappa(a, a) == 1.0
+    assert cohen_kappa(["y", "n"], ["n", "y"]) == pytest.approx(-1.0)
+    with pytest.raises(ValueError):
+        cohen_kappa(["y"], [])

@@ -9,11 +9,12 @@ from collections.abc import Iterator
 from pydantic import BaseModel
 
 from app import tracing
+from app.config import get_settings
 from app.events.schema import Event, EventFactory
 from app.graph.build import get_graph
 from app.graph.nodes.generate import FINAL_ANSWER_TAG
 from app.graph.state import Citation, ScoredChunk
-from app.llm.usage import NodeUsage
+from app.llm.usage import NodeUsage, cost_usd
 from app.pipeline import load_pipeline
 
 
@@ -28,7 +29,29 @@ class QueryResult(BaseModel):
     model_tier_used: str | None
     usage: list[NodeUsage]
     total_cost_usd: float
+    counterfactual_cost_usd: float
     total_latency_ms: float
+    route: str | None = None
+    route_reason: str | None = None
+    grounded: bool | None = None
+    gave_up: bool = False
+    escalations: int = 0
+    retries: int = 0
+    cache_hit: str | None = None
+
+
+def counterfactual_cost(usage: list[NodeUsage]) -> float:
+    """Quanto o request custaria se toda chamada de LLM usasse o modelo large, com os mesmos tokens.
+    Chamadas que não são de LLM (embedding, rerank) entram com o custo real."""
+    s = get_settings()
+    chat_models = {s.llm_model_small, s.llm_model_medium, s.llm_model_large}
+    total = 0.0
+    for u in usage:
+        if u.model in chat_models:
+            total += cost_usd(s.llm_model_large, u.tokens_in, u.tokens_out, u.tokens_cached)
+        else:
+            total += u.cost_usd
+    return total
 
 
 class QueryRun:
@@ -75,6 +98,14 @@ class QueryRun:
             model_tier_used=state.get("model_tier_used"),
             usage=usage,
             total_cost_usd=sum(u.cost_usd for u in usage),
+            counterfactual_cost_usd=counterfactual_cost(usage),
+            route=state.get("route"),
+            route_reason=state.get("route_reason"),
+            grounded=state.get("grounded"),
+            gave_up=bool(state.get("gave_up")),
+            escalations=state.get("escalations", 0),
+            retries=state.get("retries", 0),
+            cache_hit=state.get("cache_hit"),
             total_latency_ms=(time.perf_counter() - start) * 1000,
         )
         yield factory.make(
@@ -85,6 +116,7 @@ class QueryRun:
                 "citations": [c.model_dump() for c in self.result.citations],
                 "total_cost_usd": self.result.total_cost_usd,
                 "total_latency_ms": self.result.total_latency_ms,
+                "counterfactual_cost_usd": self.result.counterfactual_cost_usd,
             },
         )
 

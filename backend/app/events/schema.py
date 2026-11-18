@@ -81,6 +81,14 @@ class RerankData(BaseModel):
     chunks: list[RerankedChunk]
 
 
+class CompressData(BaseModel):
+    chunks_before: int
+    chunks_after: int
+    tokens_before: int
+    tokens_after: int
+    budget: int | None = None
+
+
 class RouterData(BaseModel):
     route: Literal["trivial", "out_of_scope", "simple_rag", "multi_hop"]
     reason: str
@@ -132,6 +140,7 @@ PAYLOADS: dict[str, type[BaseModel]] = {
 DATA_PAYLOADS: dict[str, type[BaseModel]] = {
     "retrieve": RetrieveData,
     "rerank": RerankData,
+    "compress_context": CompressData,
     "router": RouterData,
     "cache_exact": CacheExactData,
     "cache_semantic": CacheSemanticData,

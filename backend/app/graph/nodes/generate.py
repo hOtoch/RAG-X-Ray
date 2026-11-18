@@ -69,9 +69,16 @@ def generate_answer(query: str, chunks: list[ScoredChunk], tier: Tier):
     return answer, extract_citations(answer, chunks), usage
 
 
+def tier_for(state: AgentState, pipeline: PipelineConfig) -> Tier:
+    """Nível do modelo: o escalado (se houve escalada), senão o da rota, senão o padrão da pipeline."""
+    if state.get("next_tier"):
+        return state["next_tier"]
+    return pipeline.route_tiers.get(state.get("route") or "", pipeline.generate_tier)
+
+
 def make_generate(pipeline: PipelineConfig):
     def generate(state: AgentState) -> dict:
-        tier = pipeline.generate_tier
+        tier = tier_for(state, pipeline)
         answer, citations, usage = generate_answer(state["query"], state.get("context", []), tier)
         return {"answer": answer, "citations": citations, "model_tier_used": tier, "usage": [usage]}
 

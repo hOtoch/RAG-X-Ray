@@ -6,3 +6,20 @@ v0:
   retrieval_mode: dense
   top_k: 5
   generate_tier: medium
+
+v1-hybrid:
+  description: v0 + retrieval híbrido (denso + BM25 fundidos por RRF), ainda sem rerank
+  retrieval_mode: hybrid
+  candidates_k: 20
+  top_k: 5
+  generate_tier: medium
+
+v1:
+  description: v1-hybrid + rerank com cross-encoder e orçamento de contexto
+  retrieval_mode: hybrid
+  candidates_k: 20
+  top_k: 5
+  rerank: true
+  compress: true
+  context_token_budget: 2000
+  generate_tier: medium
