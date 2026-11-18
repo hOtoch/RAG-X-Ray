@@ -1,36 +1,18 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend do RAG X-Ray
 
-## Getting Started
+Interface Next.js que consome o stream SSE do backend (`POST /query/stream`) e desenha cada etapa do agente.
 
-First, run the development server:
+- `components/GraphView.tsx`: topologia real do grafo (`GET /graph/{pipeline}`), com os nós acendendo conforme os eventos chegam.
+- `components/TraceTimeline.tsx`: waterfall de latência, tokens e custo por nó, com o custo contrafactual (tudo no modelo large).
+- `components/RankingPanel.tsx`: bump chart da posição de cada trecho em denso → BM25 → RRF → rerank.
+- `components/RouterExplainer.tsx`: rota, modelo, motivo, cache e groundedness.
+- `components/AnswerWithCitations.tsx`: resposta em streaming, citações clicáveis e feedback 👍/👎.
+
+O modo **replay** lê arquivos estáticos em `public/demos/` (gerados por `backend/scripts/record_demos.py` ou `export_demos.py`) e funciona sem backend e sem LLM. É o modo padrão do demo público.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev -- --port 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`NEXT_PUBLIC_API_URL` aponta para o backend (padrão `http://localhost:8000`).
