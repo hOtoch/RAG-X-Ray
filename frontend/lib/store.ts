@@ -1,4 +1,5 @@
-import { create } from "zustand";
+import { createContext, createElement, type ReactNode, useContext, useState } from "react";
+import { createStore, type StoreApi, useStore } from "zustand";
 
 import type { DonePayload, NodeEndPayload, XrayEvent } from "./events";
 
@@ -42,7 +43,7 @@ const initial = {
   done: null,
 };
 
-export const useRun = create<RunState>((set) => ({
+const runState = (set: StoreApi<RunState>["setState"]): RunState => ({
   ...initial,
   reset: () => set({ ...initial, status: "running" }),
   fail: (message) => set({ status: "error", error: message }),
@@ -96,4 +97,31 @@ export const useRun = create<RunState>((set) => ({
       }
       return next;
     }),
-}));
+});
+
+export type RunStore = StoreApi<RunState>;
+
+/** Um store por execução: a página principal usa o padrão; o modo de comparação cria um por lado. */
+export const createRunStore = (): RunStore => createStore<RunState>()((set) => runState(set));
+
+const defaultStore = createRunStore();
+const RunContext = createContext<RunStore>(defaultStore);
+
+/** Os componentes abaixo deste provider leem o store dado, em vez do padrão. */
+export function RunProvider({ store, children }: { store: RunStore; children: ReactNode }) {
+  return createElement(RunContext.Provider, { value: store }, children);
+}
+
+/** Hook usado pelos componentes: lê o store do provider mais próximo. */
+export function useRun(): RunState;
+export function useRun<T>(selector: (state: RunState) => T): T;
+export function useRun<T>(selector?: (state: RunState) => T) {
+  const store = useContext(RunContext);
+  return useStore(store, selector ?? ((state: RunState) => state as unknown as T));
+}
+
+/** Cria um store estável para a vida do componente. */
+export function useNewRunStore(): RunStore {
+  const [store] = useState(createRunStore);
+  return store;
+}

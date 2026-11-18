@@ -1,4 +1,4 @@
-import type { ChunkDetail, GraphTopology, PipelineInfo, XrayEvent } from "./events";
+import type { ChunkDetail, CorpusMap, GraphTopology, PipelineInfo, XrayEvent } from "./events";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -118,4 +118,14 @@ export async function sendFeedback(requestId: string, value: 1 | -1) {
     body: JSON.stringify({ request_id: requestId, value }),
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
+}
+
+let corpusMap: Promise<CorpusMap | null> | null = null;
+
+/** Mapa 2D do corpus (arquivo estático, ~1 MB). Baixado uma vez e compartilhado pelos painéis. */
+export function fetchCorpusMap(): Promise<CorpusMap | null> {
+  corpusMap ??= fetch("/corpus_map.json")
+    .then((r) => (r.ok ? (r.json() as Promise<CorpusMap>) : null))
+    .catch(() => null);
+  return corpusMap;
 }

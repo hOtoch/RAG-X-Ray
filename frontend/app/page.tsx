@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AnswerWithCitations } from "@/components/AnswerWithCitations";
+import { EmbeddingMap } from "@/components/EmbeddingMap";
 import { GraphView } from "@/components/GraphView";
 import { RankingPanel } from "@/components/RankingPanel";
 import { RouterExplainer } from "@/components/RouterExplainer";
@@ -161,6 +162,12 @@ export default function Home() {
         <div className="panel panel-ranking">
           <h2>Ranking dos trechos</h2>
           <RankingPanel />
+        </div>
+        <div className="panel panel-map">
+          <h2>
+            Mapa do corpus <small>UMAP dos embeddings</small>
+          </h2>
+          <EmbeddingMap />
         </div>
       </section>
     </main>

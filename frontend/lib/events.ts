@@ -95,3 +95,20 @@ export interface ChunkDetail {
   url: string;
   text: string;
 }
+
+export interface EmbeddingMapData {
+  query_xy: [number, number];
+  hit_ids: string[];
+}
+
+/** frontend/public/corpus_map.json, gerado por backend/ingest/corpus_map.py. Em colunas: o i-ésimo
+ * trecho é (ids[i], x[i], y[i], group[i], doc[i]); `group` indexa `groups` e `doc` indexa `titles`. */
+export interface CorpusMap {
+  groups: string[];
+  titles: string[];
+  ids: string[];
+  x: number[];
+  y: number[];
+  group: number[];
+  doc: number[];
+}

@@ -185,13 +185,13 @@ body {
 .grid-main {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  grid-template-rows: 520px 300px;
+  grid-template-rows: 520px 300px 460px;
   gap: 12px;
 }
 @media (max-width: 900px) {
   .grid-main {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 460px auto 280px 300px;
+    grid-template-rows: 460px auto 280px 300px 420px;
   }
 }
 .panel {
@@ -493,4 +493,104 @@ body {
 }
 .feedback button:disabled:not([aria-pressed="true"]) {
   opacity: 0.4;
+}
+
+/* --- Mapa do corpus --- */
+.panel-map {
+  grid-column: 1 / -1;
+}
+.emap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.emap-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: radial-gradient(circle at 50% 45%, var(--panel-2), transparent 70%);
+  border-radius: 8px;
+}
+.emap-canvas canvas {
+  position: absolute;
+  inset: 0;
+}
+.emap-tip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 2;
+}
+.emap-tip span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.emap-zoom {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  border-radius: 6px;
+  padding: 4px 10px;
+  background: var(--panel);
+}
+.emap-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.emap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 11.5px;
+  font-family: var(--mono);
+  color: var(--muted);
+  flex: 0 0 auto !important;
+}
+.emap-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+}
+.emap-legend button[aria-pressed="true"] {
+  color: var(--text);
+}
+.emap-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.emap-key {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.emap-key .k-query {
+  border: 1.5px solid #fff;
+  border-radius: 999px;
+}
+.emap-key .k-hit {
+  background: var(--accent);
+  border-radius: 999px;
+}
+.emap-key .k-cited {
+  background: var(--ok);
+  border-radius: 999px;
 }

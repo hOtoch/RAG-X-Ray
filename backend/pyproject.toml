@@ -31,6 +31,9 @@ dev = [
     "pytest-asyncio>=0.23",
     "ruff>=0.6",
 ]
+map = [
+    "umap-learn>=0.6.0",
+]
 
 [build-system]
 requires = ["hatchling"]

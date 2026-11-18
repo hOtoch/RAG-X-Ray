@@ -42,3 +42,9 @@ def fake_guard_redis(monkeypatch):
     client = fakeredis.FakeRedis()
     monkeypatch.setattr("app.guard.get_redis", lambda: client)
     return client
+
+
+@pytest.fixture(autouse=True)
+def no_corpus_map(monkeypatch):
+    """Sem mapa do corpus nos testes (ele vem do Postgres); quem testa o mapa passa as coordenadas."""
+    monkeypatch.setattr("app.retrieval.embedding_map._coords", lambda: {})

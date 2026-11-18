@@ -338,6 +338,46 @@
       "title": "RerankData",
       "type": "object"
     },
+    "compress_context": {
+      "properties": {
+        "chunks_before": {
+          "title": "Chunks Before",
+          "type": "integer"
+        },
+        "chunks_after": {
+          "title": "Chunks After",
+          "type": "integer"
+        },
+        "tokens_before": {
+          "title": "Tokens Before",
+          "type": "integer"
+        },
+        "tokens_after": {
+          "title": "Tokens After",
+          "type": "integer"
+        },
+        "budget": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Budget"
+        }
+      },
+      "required": [
+        "chunks_before",
+        "chunks_after",
+        "tokens_before",
+        "tokens_after"
+      ],
+      "title": "CompressData",
+      "type": "object"
+    },
     "router": {
       "properties": {
         "route": {
@@ -465,6 +505,7 @@
   "models": [
     "CacheExactData",
     "CacheSemanticData",
+    "CompressData",
     "DonePayload",
     "EmbeddingMapData",
     "ErrorPayload",

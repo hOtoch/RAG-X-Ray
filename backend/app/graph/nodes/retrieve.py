@@ -10,6 +10,7 @@ from app.graph.state import AgentState, ScoredChunk
 from app.llm.usage import NodeUsage, cost_usd
 from app.pipeline import PipelineConfig
 from app.retrieval import dense, lexical
+from app.retrieval.embedding_map import map_payload
 from app.retrieval.hybrid import fuse
 from ingest.chunk import count_tokens
 
@@ -44,6 +45,8 @@ def make_retrieve(pipeline: PipelineConfig):
         cached_vector = state.get("query_vector")
         candidates = search(query, pipeline, cached_vector)
         emit_data("retrieve", retrieve_payload(candidates))
+        if position := map_payload(candidates):
+            emit_data("embedding_map", position)
         # Sem rerank, os primeiros candidatos já são o contexto da geração.
         usage = [] if cached_vector else [embedding_usage(query)]
         return {"candidates": candidates, "context": candidates[: pipeline.top_k], "usage": usage}
