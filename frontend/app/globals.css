@@ -661,3 +661,19 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Em telas estreitas, a pergunta ocupa a linha inteira e os seletores descem. */
+@media (max-width: 600px) {
+  .ask form {
+    flex-wrap: wrap;
+  }
+  .ask form input {
+    flex-basis: 100%;
+  }
+  .ask form select {
+    flex: 1;
+  }
+  .ask form button[type="submit"] {
+    padding: 10px 18px;
+  }
+}
