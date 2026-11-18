@@ -30,4 +30,15 @@ def memory_store(monkeypatch):
 
     monkeypatch.setattr("app.store.save_events", save_events)
     monkeypatch.setattr("app.store.load_events", lambda request_id: saved.get(request_id, []))
+    monkeypatch.setattr("app.store.save_feedback", lambda request_id, value, comment: None)
     return saved
+
+
+@pytest.fixture(autouse=True)
+def fake_guard_redis(monkeypatch):
+    """Rate limit e teto diário usam um Redis falso; nenhum teste depende do Redis real."""
+    import fakeredis
+
+    client = fakeredis.FakeRedis()
+    monkeypatch.setattr("app.guard.get_redis", lambda: client)
+    return client

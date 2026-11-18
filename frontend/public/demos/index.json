@@ -1,0 +1,16 @@
+[
+  {
+    "request_id": "d7d8d414-65c7-4de8-b131-705557ab7ab0",
+    "question": "What is a reducer in LangGraph state?",
+    "pipeline": "v0",
+    "label": "v0",
+    "note": "gravado de uma execução real"
+  },
+  {
+    "request_id": "360a4f64-9675-4159-9d43-3fad76936f2f",
+    "question": "What is a thread_id used for in LangGraph?",
+    "pipeline": "v0",
+    "label": "v0",
+    "note": "gravado de uma execução real"
+  }
+]

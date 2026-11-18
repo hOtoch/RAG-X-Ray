@@ -1,0 +1,3983 @@
+{
+  "note": "Execução interrompida: a conta da OpenAI ficou sem créditos na pergunta 58 de 160. Só as 58 primeiras perguntas (todas do tipo simple) foram avaliadas.",
+  "pipeline": "v1-hybrid",
+  "n_questions": 58,
+  "questions": [
+    {
+      "id": "q-0001",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What is the recommended pattern for validating human input and re-prompting in a LangGraph node, and why should you avoid using a `while True` loop with `interrupt()` inside a single node?",
+      "answer": "The recommended pattern for validating human input and re-prompting in a LangGraph node is:\n\n1. Store the re-prompt question in the node's state (e.g., `pending_question`).\n2. Call `interrupt()` exactly once per node invocation, passing the current question from state.\n3. If the answer is invalid, return the updated `pending_question` so the next invocation re-prompts.\n4. Use a conditional edge to loop back to the node until a valid value is provided.\n\nYou should avoid using a `while True` loop with `interrupt()` inside a single node because the node re-runs from the beginning on every resume. This causes each resume to replay all previous iterations, leading to exponential replay of interrupts (the first resume replays 1 iteration, the second replays 2, and so on), which is inefficient and can cause unexpected behavior. Instead, use a conditional edge to handle re-prompting outside the node logic [1][4].\n\nAdditionally, `interrupt()` calls must be consistent and deterministic in order and count across node executions to avoid mismatches in resume values [2].",
+      "retrieved_ids": [
+        "doc-langgraph-interrupts#chunk-25",
+        "doc-langgraph-interrupts#chunk-33",
+        "doc-langgraph-interrupts#chunk-0",
+        "doc-langgraph-interrupts#chunk-27",
+        "doc-langgraph-interrupts#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-langgraph-interrupts#chunk-25",
+        "doc-langgraph-interrupts#chunk-27",
+        "doc-langgraph-interrupts#chunk-33"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.005512820000000001,
+      "cost_usd": 0.00110322,
+      "latency_ms": 9778.40339999966,
+      "tokens_in": 1885,
+      "tokens_out": 228,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 41,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 8.200000000000001e-07,
+          "latency_ms": 4188.213100000212
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1844,
+          "tokens_cached": 0,
+          "tokens_out": 228,
+          "cost_usd": 0.0011024000000000001,
+          "latency_ms": 2890.073499999744
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the recommended pattern and explains why to avoid a while loop with interrupt(), matching and expanding on the reference answer without contradiction.",
+        "is_refusal": false,
+        "n_claims": 8,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008908
+      }
+    },
+    {
+      "id": "q-0003",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you create custom database tools using the @tool decorator in LangChain, and what is an example of such a tool for listing tables in a SQLite database?",
+      "answer": "You can create custom database tools in LangChain by implementing thin wrappers around database interactions using the `@tool` decorator from `langchain.tools`. These tools are Python functions decorated with `@tool` that encapsulate specific database operations.\n\nAn example of such a tool for listing tables in a SQLite database is:\n\n```python\nimport sqlite3\nfrom langchain.tools import tool\n\n@tool\ndef sql_db_list_tables() -> str:\n    \"\"\"Input is an empty string, output is a comma-separated list of tables in the database.\"\"\"\n    con = sqlite3.connect(\"Chinook.db\")\n    try:\n        cursor = con.cursor()\n        cursor.execute(\"SELECT name FROM sqlite_master WHERE type='table';\")\n        tables = [row[0] for row in cursor.fetchall() if not row[0].startswith(\"sqlite_\")]\n        return \", \".join(tables)\n    finally:\n        con.close()\n```\n\nThis function connects to the SQLite database \"Chinook.db\", queries the list of tables excluding internal SQLite tables, and returns them as a comma-separated string. Note that these tools are minimal wrappers for demonstration and not intended for production use without additional security and validation measures [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-langgraph-sql-agent#chunk-13",
+        "doc-langgraph-sql-agent#chunk-12",
+        "doc-langchain-sql-agent#chunk-11",
+        "doc-langchain-sql-agent#chunk-10",
+        "doc-javascript-integrations-tools-sql#chunk-0"
+      ],
+      "cited_ids": [
+        "doc-langgraph-sql-agent#chunk-13",
+        "doc-langgraph-sql-agent#chunk-12",
+        "doc-langchain-sql-agent#chunk-11",
+        "doc-langchain-sql-agent#chunk-10"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.005106660000000001,
+      "cost_usd": 0.00102186,
+      "latency_ms": 9972.926399999778,
+      "tokens_in": 1594,
+      "tokens_out": 248,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 33,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.6e-07,
+          "latency_ms": 4174.882799999978
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1561,
+          "tokens_cached": 0,
+          "tokens_out": 248,
+          "cost_usd": 0.0010212,
+          "latency_ms": 3101.232200000595
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes using the @tool decorator and provides a correct example for listing tables, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.007192
+      }
+    },
+    {
+      "id": "q-0004",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you delete the earliest two messages from memory in a LangGraph StateGraph using the RemoveMessage class?",
+      "answer": "To delete the earliest two messages from memory in a LangGraph StateGraph using the `RemoveMessage` class, you can define a function that accesses the current messages in the state, selects the earliest two, and returns a dictionary with the `messages` key containing a list of `RemoveMessage` instances for those messages' IDs.\n\nExample in Python:\n\n```python\nfrom langchain.messages import RemoveMessage\n\ndef delete_messages(state):\n    messages = state[\"messages\"]\n    if len(messages) > 2:\n        # remove the earliest two messages\n        return {\"messages\": [RemoveMessage(id=m.id) for m in messages[:2]]}\n```\n\nThis function can be used as a graph node or middleware in your StateGraph to manage short-term memory by removing the earliest two messages from the message history.\n\nMake sure your state key uses a reducer like `add_messages` to support `RemoveMessage`.\n\nThis pattern is shown in multiple examples in the documentation, including full examples with StateGraph and agent middleware [1][2][3][5].",
+      "retrieved_ids": [
+        "doc-langgraph-add-memory#chunk-57",
+        "doc-langchain-short-term-memory#chunk-14",
+        "doc-langgraph-add-memory#chunk-58",
+        "doc-langgraph-add-memory#chunk-60",
+        "doc-langchain-short-term-memory#chunk-15"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-57",
+        "doc-langchain-short-term-memory#chunk-14",
+        "doc-langgraph-add-memory#chunk-58",
+        "doc-langchain-short-term-memory#chunk-15"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00570044,
+      "cost_usd": 0.00114044,
+      "latency_ms": 9590.277100000094,
+      "tokens_in": 2028,
+      "tokens_out": 211,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 22,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.4e-07,
+          "latency_ms": 4142.873400000099
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 2006,
+          "tokens_cached": 0,
+          "tokens_out": 211,
+          "cost_usd": 0.00114,
+          "latency_ms": 2749.663900000087
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer correctly explains how to remove the earliest two messages using RemoveMessage, matching the reference, and adds helpful implementation details.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008222
+      }
+    },
+    {
+      "id": "q-0002",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph's event streaming system, what is the purpose of a stream transformer and when should a developer write their own?",
+      "answer": "A stream transformer in LangGraph's event streaming system serves as the projection layer that observes protocol events, maintains its own state, and exposes derived views of a run, such as tool activity, token totals, progress events, artifacts, or messages for another protocol. Transformers consume events and push derived values into `StreamChannel` or other projection objects without calling back into the graph runtime. They implement the `StreamTransformer` interface with methods like `init()`, `process(event)`, `finalize()`, and `fail()` to manage the lifecycle of the projection.\n\nA developer should write their own stream transformer when the existing built-in or product-specific projections do not match the shape or specific needs of their application. Custom transformers stack on top of existing ones and their projections appear under `stream.extensions` for consumption.\n\nThis design allows flexible, composable projections tailored to application-specific requirements beyond the built-in projections like `stream.messages`, `stream.values`, `stream.subgraphs`, `stream.output`, or product-specific ones like LangChain's `stream.tool_calls` [1][2][3].",
+      "retrieved_ids": [
+        "doc-langgraph-event-streaming#chunk-19",
+        "doc-langgraph-event-streaming#chunk-18",
+        "doc-langgraph-event-streaming#chunk-20",
+        "doc-langgraph-streaming#chunk-0",
+        "doc-langgraph-event-streaming#chunk-27"
+      ],
+      "cited_ids": [
+        "doc-langgraph-event-streaming#chunk-19",
+        "doc-langgraph-event-streaming#chunk-18",
+        "doc-langgraph-event-streaming#chunk-20"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0036125000000000003,
+      "cost_usd": 0.0007229000000000001,
+      "latency_ms": 9692.363499999374,
+      "tokens_in": 959,
+      "tokens_out": 218,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 4162.738400000308
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 934,
+          "tokens_cached": 0,
+          "tokens_out": 218,
+          "cost_usd": 0.0007224000000000001,
+          "latency_ms": 2830.4165999998077
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains the purpose of a stream transformer and when to write a custom one, adding correct extra detail without contradicting the reference.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006702
+      }
+    },
+    {
+      "id": "q-0006",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What are the main differences between workflows and agents in LangGraph?",
+      "answer": "Workflows in LangGraph have predetermined code paths and operate in a certain order, meaning their process is fixed and sequential. Agents, on the other hand, are dynamic and define their own processes and tool usage, allowing for more flexible and adaptive behavior. Thus, workflows are static and ordered, while agents are dynamic and self-directed in their execution [1].",
+      "retrieved_ids": [
+        "doc-langgraph-workflows-agents#chunk-0",
+        "doc-concepts-products#chunk-6",
+        "doc-deepagents-comparison#chunk-7",
+        "doc-langgraph-overview#chunk-0",
+        "doc-python-integrations-providers-nvidia#chunk-17"
+      ],
+      "cited_ids": [
+        "doc-langgraph-workflows-agents#chunk-0"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0023042600000000002,
+      "cost_usd": 0.00046106000000000006,
+      "latency_ms": 1727.0659000005253,
+      "tokens_in": 881,
+      "tokens_out": 71,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 13,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 2.6e-07,
+          "latency_ms": 572.1300999994128
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 868,
+          "tokens_cached": 0,
+          "tokens_out": 71,
+          "cost_usd": 0.0004608000000000001,
+          "latency_ms": 1147.6471000005404
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately captures the distinction between workflows (static, ordered) and agents (dynamic, self-directed) as described in the reference.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.004326
+      }
+    },
+    {
+      "id": "q-0008",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's memory checkpointing system, what information does the 'channel_values' field of a CheckpointTuple contain?",
+      "answer": "The 'channel_values' field of a CheckpointTuple contains the serialized state of the graph channels at that checkpoint. Specifically, it holds the values of different channels, such as message histories or other data passed through the graph nodes. For example, it can include lists of messages exchanged (e.g., HumanMessage and AIMessage objects) or other channel-specific data structures representing the state at that point in the computation or conversation thread [2][4][5].",
+      "retrieved_ids": [
+        "doc-langgraph-checkpointers#chunk-27",
+        "doc-langgraph-add-memory#chunk-81",
+        "doc-langgraph-checkpointers#chunk-40",
+        "doc-langgraph-add-memory#chunk-80",
+        "doc-langgraph-add-memory#chunk-83"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-81",
+        "doc-langgraph-add-memory#chunk-80",
+        "doc-langgraph-add-memory#chunk-83"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.004082499999999999,
+      "cost_usd": 0.0008169000000000001,
+      "latency_ms": 2335.522100000162,
+      "tokens_in": 1698,
+      "tokens_out": 92,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 548.8866000005146
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1673,
+          "tokens_cached": 0,
+          "tokens_out": 92,
+          "cost_usd": 0.0008164000000000001,
+          "latency_ms": 1779.62000000025
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes that 'channel_values' contains the values of channels, such as message histories, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006246
+      }
+    },
+    {
+      "id": "q-0005",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the 'grade_documents' function in LangGraph behave when provided with relevant versus irrelevant tool responses in the message history?",
+      "answer": "The `grade_documents` function in LangGraph evaluates the relevance of retrieved documents to a user question by analyzing the last tool response content in the message history. It uses a model with a structured output schema `GradeDocuments` that returns a binary score: \"yes\" if the document is relevant, or \"no\" if it is not.\n\n- When provided with **relevant tool responses** (i.e., the tool content semantically matches or contains keywords related to the user question), `grade_documents` returns `\"generate_answer\"`, indicating the graph should proceed to generate the final answer using the retrieved document context.\n\n- When provided with **irrelevant tool responses** (i.e., the tool content does not relate to the user question), `grade_documents` returns `\"rewrite_question\"`, signaling the graph to rewrite the question and attempt retrieval again.\n\nThis behavior is demonstrated in the test examples where irrelevant content like `\"meow\"` leads to a \"no\" relevance score and relevant content describing \"reward hacking\" leads to a \"yes\" relevance score, guiding the routing accordingly [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-langgraph-agentic-rag#chunk-10",
+        "doc-langgraph-agentic-rag#chunk-9",
+        "doc-langgraph-agentic-rag#chunk-8",
+        "doc-langgraph-agentic-rag#chunk-15",
+        "doc-langgraph-agentic-rag#chunk-16"
+      ],
+      "cited_ids": [
+        "doc-langgraph-agentic-rag#chunk-10",
+        "doc-langgraph-agentic-rag#chunk-9",
+        "doc-langgraph-agentic-rag#chunk-8",
+        "doc-langgraph-agentic-rag#chunk-15"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0050704999999999995,
+      "cost_usd": 0.0010145,
+      "latency_ms": 3453.554699999586,
+      "tokens_in": 1664,
+      "tokens_out": 224,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 539.7993999995379
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1639,
+          "tokens_cached": 0,
+          "tokens_out": 224,
+          "cost_usd": 0.001014,
+          "latency_ms": 2905.457899999419
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer correctly explains that 'grade_documents' distinguishes relevant from irrelevant responses, but adds implementation details (like returning 'generate_answer' or 'rewrite_question') not present in the reference.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008098
+      }
+    },
+    {
+      "id": "q-0007",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you implement branching logic based on a behavioral version in a LangGraph StateGraph?",
+      "answer": "You can implement branching logic based on a behavioral version in a LangGraph StateGraph by recording the behavioral version on the state at the start of the thread and then using a conditional edge to branch based on that version. Specifically:\n\n1. At the intake node, stamp new threads with the current flow version, preserving existing threads' version if already set.\n2. Define a function that checks the behavioral version in the state and returns the next node name accordingly.\n3. Use `add_conditional_edges` with this function to conditionally route the flow.\n\nExample from the documentation:\n\n```python\nfrom typing import NotRequired\nfrom typing_extensions import TypedDict\n\nfrom langgraph.graph import END, START, StateGraph\n\nclass State(TypedDict):\n    request: str\n    flow_version: NotRequired[int]\n    response: NotRequired[str]\n\ndef intake(state: State) -> dict:\n    return {\"flow_version\": state.get(\"flow_version\", 2)}\n\ndef triage(state: State) -> dict: ...\ndef policy_check(state: State) -> dict: ...\ndef respond(state: State) -> dict: ...\n\ndef after_triage(state: State) -> str:\n    if state.get(\"flow_version\", 1) >= 2:\n        return \"policy_check\"\n    return \"respond\"\n\nbuilder = StateGraph(State)\nbuilder.add_node(\"intake\", intake)\nbuilder.add_node(\"triage\", triage)\nbuilder.add_node(\"policy_check\", policy_check)\nbuilder.add_node(\"respond\", respond)\nbuilder.add_edge(START, \"intake\")\nbuilder.add_edge(\"intake\", \"triage\")\nbuilder.add_conditional_edges(\"triage\", after_triage, [\"policy_check\", \"respond\"])\nbuilder.add_edge(\"policy_check\", \"respond\")\nbuilder.add_edge(\"respond\", END)\n\ngraph = builder.compile()\n```\n\nThis pattern ensures backward compatibility by allowing existing threads to continue with the old flow while new threads follow the updated flow based on the behavioral version recorded in the state [1][3].",
+      "retrieved_ids": [
+        "doc-langgraph-backward-compatibility#chunk-5",
+        "doc-langgraph-graph-api-control-flow#chunk-13",
+        "doc-langgraph-backward-compatibility#chunk-4",
+        "doc-langchain-frontend-branching-chat#chunk-0",
+        "doc-langgraph-graph-api-control-flow#chunk-5"
+      ],
+      "cited_ids": [
+        "doc-langgraph-backward-compatibility#chunk-5",
+        "doc-langgraph-backward-compatibility#chunk-4"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.005892359999999999,
+      "cost_usd": 0.00117876,
+      "latency_ms": 4713.678999999502,
+      "tokens_in": 1336,
+      "tokens_out": 407,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 18,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.6e-07,
+          "latency_ms": 533.4548999999242
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1318,
+          "tokens_cached": 0,
+          "tokens_out": 407,
+          "cost_usd": 0.0011784,
+          "latency_ms": 4173.561399999926
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes recording the version in state, using a function to branch, and applying add_conditional_edges, matching the reference and providing extra correct detail.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.007452
+      }
+    },
+    {
+      "id": "q-0009",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph, how can you ensure that multiple per-thread subgraphs (such as a fruit expert and a veggie expert) do not overwrite each other's checkpoints?",
+      "answer": "To ensure multiple per-thread subgraphs (e.g., a fruit expert and a veggie expert) do not overwrite each other's checkpoints, you need to provide each subgraph with its own unique storage namespace. This is called **namespace isolation**.\n\nLangGraph assigns namespaces based on call order by default, which can cause checkpoint conflicts if calls are reordered. To avoid this, wrap each subagent in its own `StateGraph` with a unique node name. This gives each subgraph a stable, unique namespace and prevents their checkpoints from overwriting each other.\n\nThis approach is described in the context of per-thread subgraphs to maintain isolated persistent state per subagent [1].",
+      "retrieved_ids": [
+        "doc-langgraph-use-subgraphs#chunk-29",
+        "doc-langgraph-use-subgraphs#chunk-26",
+        "doc-langgraph-use-subgraphs#chunk-27",
+        "doc-langgraph-use-subgraphs#chunk-19",
+        "doc-langgraph-use-subgraphs#chunk-24"
+      ],
+      "cited_ids": [
+        "doc-langgraph-use-subgraphs#chunk-29"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00477468,
+      "cost_usd": 0.00095548,
+      "latency_ms": 2936.3533999994615,
+      "tokens_in": 1889,
+      "tokens_out": 133,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 34,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.800000000000001e-07,
+          "latency_ms": 994.5587000001979
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1855,
+          "tokens_cached": 0,
+          "tokens_out": 133,
+          "cost_usd": 0.0009548,
+          "latency_ms": 1934.4555999996373
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that wrapping each subagent in its own StateGraph with a unique node name ensures unique namespaces and prevents checkpoint overwrites, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.007522
+      }
+    },
+    {
+      "id": "q-0010",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph's Functional API, how should tasks be called and how are their results retrieved?",
+      "answer": "In LangGraph's Functional API, tasks are called by invoking the decorated task function, which starts the task immediately and returns a future-like object. The results of the task can then be retrieved by awaiting the task or by calling `.result()` on the returned future-like object. This allows concurrent execution of tasks, with the entrypoint blocking only when waiting for the result. Tasks also support checkpointing, so their results are saved and can be restored on resume. This usage pattern enables parallel execution, checkpointing, and observability of discrete units of work within the workflow. \n\nThis is summarized as:\n- Calling a task starts it immediately and returns a future-like object.\n- Retrieve the result by awaiting or calling `.result()` on the task.\n- Tasks support concurrency and checkpointing.\n\nThese details are described in passages [3] and [4].",
+      "retrieved_ids": [
+        "doc-langgraph-functional-api#chunk-1",
+        "doc-langgraph-graph-api#chunk-22",
+        "doc-langgraph-functional-api#chunk-0",
+        "doc-langgraph-functional-api#chunk-8",
+        "doc-langgraph-functional-api#chunk-11"
+      ],
+      "cited_ids": [
+        "doc-langgraph-functional-api#chunk-0",
+        "doc-langgraph-functional-api#chunk-8"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0033023799999999997,
+      "cost_usd": 0.0006607800000000001,
+      "latency_ms": 2820.8008999999947,
+      "tokens_in": 990,
+      "tokens_out": 170,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 19,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.8e-07,
+          "latency_ms": 448.13820000035776
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 971,
+          "tokens_cached": 0,
+          "tokens_out": 170,
+          "cost_usd": 0.0006604000000000001,
+          "latency_ms": 2365.4967000002216
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer correctly describes how to call tasks and retrieve results, but omits the crucial restriction that tasks should only be called from within the workflow (entrypoint, another task, or Graph API node), not from arbitrary application code.",
+        "is_refusal": false,
+        "n_claims": 8,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006534
+      }
+    },
+    {
+      "id": "q-0012",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What are the main components required in the structure of a LangGraph application?",
+      "answer": "The main components required in the structure of a LangGraph application are:\n\n1. One or more graphs that implement the application logic.\n2. A LangGraph configuration file (`langgraph.json`) specifying dependencies, graphs, and environment variables.\n3. A file specifying dependencies (e.g., `requirements.txt`, `pyproject.toml`, or `package.json`).\n4. An optional `.env` file for environment variables needed by the application.\n\nThese components together enable deployment and operation of the LangGraph application [1][2][3][4][5].",
+      "retrieved_ids": [
+        "doc-langgraph-application-structure#chunk-0",
+        "doc-langgraph-application-structure#chunk-1",
+        "doc-langgraph-application-structure#chunk-5",
+        "doc-langgraph-application-structure#chunk-6",
+        "doc-langgraph-application-structure#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-langgraph-application-structure#chunk-0",
+        "doc-langgraph-application-structure#chunk-1",
+        "doc-langgraph-application-structure#chunk-5",
+        "doc-langgraph-application-structure#chunk-6",
+        "doc-langgraph-application-structure#chunk-2"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0030163,
+      "cost_usd": 0.0006035,
+      "latency_ms": 2293.4086000004754,
+      "tokens_in": 1075,
+      "tokens_out": 112,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 15,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3e-07,
+          "latency_ms": 472.87059999962366
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1060,
+          "tokens_cached": 0,
+          "tokens_out": 112,
+          "cost_usd": 0.0006032,
+          "latency_ms": 1814.3845000004148
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately lists all required components and provides additional correct details without contradiction.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.0057079999999999995
+      }
+    },
+    {
+      "id": "q-0011",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the LangGraph library use semantic search to retrieve relevant user memories for a chat session?",
+      "answer": "LangGraph uses semantic search in its memory store to retrieve relevant user memories by embedding stored texts and querying them based on semantic similarity to the user's latest message. The process involves:\n\n1. Creating a memory store (e.g., `InMemoryStore` or `MongoDBStore`) with semantic search enabled by providing an embeddings model (like `\"openai:text-embedding-3-small\"` or `\"text-embedding-3-small\"`). This allows the store to index items by their vector embeddings [1][2][3][5].\n\n2. Storing user memories as key-value pairs, where the values contain text fields representing the memories (e.g., `\"I love pizza\"`, `\"I am a plumber\"`) [1][2][3][5].\n\n3. During a chat session, when a new user message arrives, the system performs a semantic search query against the stored memories using the latest message content as the query. This search returns items ranked by similarity scores [1][2][3][5].\n\n4. Filtering the retrieved items by a score threshold (e.g., > 0.2) to select relevant memories [1][2][5].\n\n5. Concatenating the filtered memories into a context string (e.g., `\"## Memories of user\\n...\"`) and including this context in the system prompt for the chat model [1][2][5].\n\n6. Invoking the chat model with the augmented prompt to generate a response that takes into account the relevant user memories [1][2].\n\nThis approach enables the chat agent to recall and utilize relevant past information semantically related to the current conversation, improving contextual understanding and response quality. \n\nExample snippet from Python usage:\n\n```python\nitems = await runtime.store.asearch(\n    (\"user_123\", \"memories\"), query=state[\"messages\"][-1].content\n)\nmemories = \"\\n\".join(\n    item.value[\"text\"]\n    for item in items\n    if item.score is not None and item.score > 0.2\n)\nmemories = f\"## Memories of user\\n{memories}\" if memories else \"\"\nresponse = await model.ainvoke(\n    [\n        {\"role\": \"system\", \"content\": f\"You are a helpful assistant.\\n{memories}\"},\n        *state[\"messages\"],\n    ]\n)\n```\n\nThis pattern is similarly implemented in TypeScript with `runtime.store.search` and filtering by score [1][2][5].",
+      "retrieved_ids": [
+        "doc-langgraph-add-memory#chunk-45",
+        "doc-langgraph-add-memory#chunk-47",
+        "doc-langgraph-add-memory#chunk-44",
+        "doc-langgraph-add-memory#chunk-48",
+        "doc-langgraph-add-memory#chunk-50"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-45",
+        "doc-langgraph-add-memory#chunk-47",
+        "doc-langgraph-add-memory#chunk-44",
+        "doc-langgraph-add-memory#chunk-50"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00806238,
+      "cost_usd": 0.00161278,
+      "latency_ms": 5676.477900000464,
+      "tokens_in": 2054,
+      "tokens_out": 499,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 19,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.8e-07,
+          "latency_ms": 440.1665999994293
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 2035,
+          "tokens_cached": 0,
+          "tokens_out": 499,
+          "cost_usd": 0.0016124000000000002,
+          "latency_ms": 5229.777999999897
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 0.8888888888888888,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the use of semantic search, score filtering, and inclusion of retrieved memories in the system prompt, matching the reference answer and providing additional correct detail.",
+        "is_refusal": false,
+        "n_claims": 9,
+        "unsupported_claims": [
+          "This approach enables the chat agent to recall and utilize relevant past information semantically related to the current conversation, improving contextual understanding and response quality."
+        ],
+        "judge_cost_usd": 0.01141
+      }
+    },
+    {
+      "id": "q-0015",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What is the recommended way to set up the required schema when using a database-backed persistence implementation for memory in LangChain?",
+      "answer": "The recommended way to set up the required schema when using a database-backed persistence implementation for memory in LangChain is to run migrations before using the database. Most database-specific libraries provide a `setup()` method on the checkpointer or store instance that runs these migrations. It is advised to run migrations as a dedicated deployment step or ensure they run as part of server startup. You should check the specific implementation of `BaseCheckpointSaver` or `BaseStore` for the exact method name and usage. For example, with CockroachDBStore, you call `store.setup()` the first time you use the store to create the required tables [1][3].",
+      "retrieved_ids": [
+        "doc-langgraph-add-memory#chunk-86",
+        "doc-langgraph-use-subgraphs#chunk-20",
+        "doc-python-integrations-providers-cockroachdb#chunk-12",
+        "doc-javascript-integrations-stores-in-memory#chunk-2",
+        "doc-python-integrations-chat-anthropic#chunk-97"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-86",
+        "doc-python-integrations-providers-cockroachdb#chunk-12"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00283848,
+      "cost_usd": 0.00056808,
+      "latency_ms": 2463.7087000000975,
+      "tokens_in": 923,
+      "tokens_out": 130,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 24,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.8e-07,
+          "latency_ms": 699.7694000001502
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 899,
+          "tokens_cached": 0,
+          "tokens_out": 130,
+          "cost_usd": 0.0005676,
+          "latency_ms": 1757.6340000005075
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes running migrations via a setup() method, when to run them, and gives a relevant example, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005408
+      }
+    },
+    {
+      "id": "q-0014",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you enable semantic search in the LangChain InMemoryStore, and how do you control which fields are embedded?",
+      "answer": "To enable semantic search in the LangChain InMemoryStore, you need to configure the store with an embedding model by specifying the `index` parameter with an embedding provider and embedding dimensions. For example:\n\n```python\nfrom langchain.embeddings import init_embeddings\n\nstore = InMemoryStore(\n    index={\n        \"embed\": init_embeddings(\"openai:text-embedding-3-small\"),\n        \"dims\": 1536,\n        \"fields\": [\"food_preference\", \"$\"]  # fields to embed\n    }\n)\n```\n\nThis setup allows you to perform semantic search queries on the stored memories.\n\nTo control which fields are embedded, you can specify the `fields` parameter in the `index` configuration or override it per memory item when storing data by passing the `index` argument to `store.put()`. For example:\n\n```python\nstore.put(\n    namespace_for_memory,\n    str(uuid7()),\n    {\n        \"food_preference\": \"I love Italian cuisine\",\n        \"context\": \"Discussing dinner plans\"\n    },\n    index=[\"food_preference\"]  # Only embed \"food_preference\" field\n)\n\nstore.put(\n    namespace_for_memory,\n    str(uuid7()),\n    {\"system_info\": \"Last updated: 2024-01-01\"},\n    index=False  # Store without embedding (not searchable)\n)\n```\n\nThis way, you can embed only specific fields or disable embedding for certain entries while still storing them for retrieval [1][2][3].",
+      "retrieved_ids": [
+        "doc-langgraph-stores#chunk-5",
+        "doc-langgraph-add-memory#chunk-44",
+        "doc-langgraph-stores#chunk-9",
+        "doc-langchain-knowledge-base#chunk-1",
+        "doc-langchain-knowledge-base#chunk-26"
+      ],
+      "cited_ids": [
+        "doc-langgraph-stores#chunk-5",
+        "doc-langgraph-add-memory#chunk-44",
+        "doc-langgraph-stores#chunk-9"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0044224799999999995,
+      "cost_usd": 0.0008848800000000001,
+      "latency_ms": 4055.048400000487,
+      "tokens_in": 1031,
+      "tokens_out": 301,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 24,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.8e-07,
+          "latency_ms": 591.8865999992704
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1007,
+          "tokens_cached": 0,
+          "tokens_out": 301,
+          "cost_usd": 0.0008844000000000001,
+          "latency_ms": 3456.6211999999723
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains how to enable semantic search and control embedded fields, matching the reference and providing correct examples.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006112
+      }
+    },
+    {
+      "id": "q-0013",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you emit custom key-value data during node or tool execution in a LangGraph graph and receive it in the stream?",
+      "answer": "To emit custom key-value data during node or tool execution in a LangGraph graph and receive it in the stream, follow these steps:\n\n1. Inside your node or tool function, use `get_stream_writer()` to get the stream writer object.\n2. Use the stream writer to emit custom key-value pairs as dictionaries, e.g. `writer({\"custom_key\": \"value\"})`.\n3. When calling `.stream()` or `.astream()` on the graph, set `stream_mode=\"custom\"` (or include `\"custom\"` in a list of modes) to receive the custom data in the stream.\n4. In the streaming loop, check for chunks where `chunk[\"type\"] == \"custom\"` and access your custom data via `chunk[\"data\"]`.\n\nExample for a node:\n\n```python\nfrom langgraph.config import get_stream_writer\n\ndef node(state):\n    writer = get_stream_writer()\n    writer({\"custom_key\": \"Generating custom data inside node\"})\n    return {\"answer\": \"some data\"}\n\ngraph.stream(inputs, stream_mode=\"custom\", version=\"v2\")\n```\n\nExample for a tool:\n\n```python\nfrom langchain.tools import tool\nfrom langgraph.config import get_stream_writer\n\n@tool\ndef query_database(query: str) -> str:\n    writer = get_stream_writer()\n    writer({\"data\": \"Retrieved 0/100 records\", \"type\": \"progress\"})\n    # perform query\n    writer({\"data\": \"Retrieved 100/100 records\", \"type\": \"progress\"})\n    return \"some-answer\"\n```\n\nThen consume the stream and handle custom events:\n\n```python\nfor chunk in graph.stream(inputs, stream_mode=\"custom\", version=\"v2\"):\n    if chunk[\"type\"] == \"custom\":\n        print(f\"Custom event: {chunk['data']}\")\n```\n\nNote: For async code on Python < 3.11, `get_stream_writer` is not available; instead, pass a `writer` parameter manually to your node or tool [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-langgraph-streaming#chunk-25",
+        "doc-langgraph-streaming#chunk-24",
+        "doc-langgraph-streaming#chunk-36",
+        "doc-langchain-tools#chunk-16",
+        "doc-langgraph-pregel#chunk-14"
+      ],
+      "cited_ids": [
+        "doc-langgraph-streaming#chunk-25",
+        "doc-langgraph-streaming#chunk-24",
+        "doc-langgraph-streaming#chunk-36",
+        "doc-langchain-tools#chunk-16"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0062885,
+      "cost_usd": 0.0012581,
+      "latency_ms": 7512.421900000845,
+      "tokens_in": 1521,
+      "tokens_out": 412,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 501.2173000004623
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1496,
+          "tokens_cached": 0,
+          "tokens_out": 412,
+          "cost_usd": 0.0012576,
+          "latency_ms": 7004.513100000622
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes using get_stream_writer() to emit custom key-value data, setting stream_mode='custom', and how to receive and process these events in the stream, matching the reference answer and adding helpful implementation details.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008142
+      }
+    },
+    {
+      "id": "q-0017",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What changes to nodes in a LangGraph workflow can cause technical compatibility issues with existing checkpointed threads?",
+      "answer": "The changes to nodes in a LangGraph workflow that can cause technical compatibility issues with existing checkpointed threads are:\n\n- Renaming a node while threads are paused at or about to enter that node.\n- Removing a node while threads are paused at or about to enter that node.\n\nThese changes cause issues because on resume, LangGraph looks up the node by its saved name in the checkpoint. If the node is missing or renamed, the run fails since there is no valid starting point for resuming execution at that node [1][3].",
+      "retrieved_ids": [
+        "doc-langgraph-backward-compatibility#chunk-1",
+        "doc-langgraph-backward-compatibility#chunk-0",
+        "doc-langgraph-graph-api#chunk-38",
+        "doc-langgraph-backward-compatibility#chunk-3",
+        "doc-langgraph-backward-compatibility#chunk-4"
+      ],
+      "cited_ids": [
+        "doc-langgraph-backward-compatibility#chunk-1",
+        "doc-langgraph-graph-api#chunk-38"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0039884000000000005,
+      "cost_usd": 0.0007980000000000001,
+      "latency_ms": 1927.5980000002164,
+      "tokens_in": 1586,
+      "tokens_out": 107,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 20,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.0000000000000003e-07,
+          "latency_ms": 447.4178000000393
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1566,
+          "tokens_cached": 0,
+          "tokens_out": 107,
+          "cost_usd": 0.0007976000000000001,
+          "latency_ms": 1472.8066999996372
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that renaming or removing a node causes compatibility issues because LangGraph cannot find the node by its saved name when resuming a checkpointed thread.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006188
+      }
+    },
+    {
+      "id": "q-0019",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you stream LLM tokens with metadata using LangGraph, and what stream mode and version should you use?",
+      "answer": "You can stream LLM tokens with metadata in LangGraph by using the `stream_mode=\"messages\"` and specifying `version=\"v2\"` for a unified StreamPart format. This mode streams tokens token-by-token along with metadata about the graph node and LLM invocation.\n\nExample usage:\n```python\nfor chunk in graph.stream(\n    inputs,\n    stream_mode=\"messages\",  # streams LLM tokens with metadata\n    version=\"v2\",  # unified StreamPart format\n):\n    if chunk[\"type\"] == \"messages\":\n        message_chunk, metadata = chunk[\"data\"]\n        if message_chunk.content:\n            print(message_chunk.content, end=\"|\", flush=True)\n```\n\nThis approach allows you to access both the token content and metadata such as the node name or invocation tags during streaming [1][2][4][5].",
+      "retrieved_ids": [
+        "doc-langgraph-streaming#chunk-19",
+        "doc-langgraph-streaming#chunk-9",
+        "doc-langgraph-streaming#chunk-13",
+        "doc-langgraph-streaming#chunk-10",
+        "doc-langgraph-streaming#chunk-20"
+      ],
+      "cited_ids": [
+        "doc-langgraph-streaming#chunk-19",
+        "doc-langgraph-streaming#chunk-9",
+        "doc-langgraph-streaming#chunk-10",
+        "doc-langgraph-streaming#chunk-20"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00422846,
+      "cost_usd": 0.00084606,
+      "latency_ms": 2555.7712000008905,
+      "tokens_in": 1457,
+      "tokens_out": 170,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 23,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.6000000000000004e-07,
+          "latency_ms": 426.9710999997187
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1434,
+          "tokens_cached": 0,
+          "tokens_out": 170,
+          "cost_usd": 0.0008456000000000001,
+          "latency_ms": 2122.277500000564
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer correctly states to use stream_mode='messages' and version='v2', and provides accurate extra detail and example code.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.0060420000000000005
+      }
+    },
+    {
+      "id": "q-0016",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the LangGraph Graph API use runtime context to pass dependencies like model names or database handles into nodes?",
+      "answer": "LangGraph's Graph API uses runtime context to pass dependencies such as model names or database handles into nodes by defining a runtime configuration schema and injecting this context into node functions via a `Runtime` object. This allows passing values into a run without putting them in the graph state.\n\nThe process involves:\n\n1. Specifying a schema for the runtime configuration (e.g., model name or database handle).\n2. Adding the configuration to the function signature of nodes by accepting a `runtime: Runtime[ContextSchema]` parameter.\n3. Accessing the runtime context inside the node via `runtime.context` to retrieve dependencies.\n4. Passing the configuration into the graph invocation via the `context` argument.\n\nFor example, a node function can access the model provider like this:\n\n```python\ndef node_a(state: State, runtime: Runtime[ContextSchema]):\n    llm = get_llm(runtime.context.llm_provider)\n    return {\"output\": llm}\n```\n\nWhen invoking the graph, the runtime context is passed as:\n\n```python\ngraph.invoke({\"input\": \"hi\"}, context={\"llm_provider\": \"anthropic\"})\n```\n\nThis approach enables dependency injection, making tools more testable and flexible by avoiding hardcoded values or global state. The runtime context is injected without being part of the graph state, ensuring separation of configuration and state data [1][2][3][5].",
+      "retrieved_ids": [
+        "doc-langgraph-graph-api#chunk-39",
+        "doc-langgraph-graph-api-nodes#chunk-1",
+        "doc-langchain-runtime#chunk-0",
+        "doc-langgraph-add-memory#chunk-20",
+        "doc-langgraph-graph-api#chunk-18"
+      ],
+      "cited_ids": [
+        "doc-langgraph-graph-api#chunk-39",
+        "doc-langgraph-graph-api-nodes#chunk-1",
+        "doc-langchain-runtime#chunk-0",
+        "doc-langgraph-graph-api#chunk-18"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00571244,
+      "cost_usd": 0.00114284,
+      "latency_ms": 6877.863700000489,
+      "tokens_in": 1762,
+      "tokens_out": 279,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 22,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.4e-07,
+          "latency_ms": 457.45139999962703
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1740,
+          "tokens_cached": 0,
+          "tokens_out": 279,
+          "cost_usd": 0.0011424,
+          "latency_ms": 6413.105799999357
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the use of runtime context for dependency injection, the schema definition, node function signatures, and separation from graph state, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 10,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009692000000000001
+      }
+    },
+    {
+      "id": "q-0018",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the LangGraph StateGraph workflow use conditional edges to determine the next step after generating a joke?",
+      "answer": "The LangGraph `StateGraph` workflow uses conditional edges by adding a conditional edge from the node that generates the joke to decide the next node based on a gate function that inspects the current state. Specifically, after the `generate_joke` node runs, a function `check_punchline` examines the joke in the state to see if it contains a punchline (checking for \"?\" or \"!\"). Depending on this check, the workflow routes either to the end of the graph (`END`) if the joke passes, or to the `improve_joke` node if it fails.\n\nThis is implemented by calling `add_conditional_edges` on the workflow with the node name `\"generate_joke\"`, the gate function `check_punchline`, and a dictionary mapping the gate function's outputs `\"Fail\"` and `\"Pass\"` to the next nodes `\"improve_joke\"` and `END` respectively.\n\nExample snippet from the workflow:\n\n```python\nworkflow.add_conditional_edges(\n    \"generate_joke\", check_punchline, {\"Fail\": \"improve_joke\", \"Pass\": END}\n)\n```\n\nThis mechanism allows the graph to branch dynamically at runtime based on the state produced by the node, enabling conditional routing in the workflow [1][2][3].",
+      "retrieved_ids": [
+        "doc-langgraph-workflows-agents#chunk-4",
+        "doc-langgraph-graph-api#chunk-1",
+        "doc-langgraph-graph-api-control-flow#chunk-13",
+        "doc-langgraph-agentic-rag#chunk-16",
+        "doc-langgraph-graph-api-send-command#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-langgraph-workflows-agents#chunk-4",
+        "doc-langgraph-graph-api#chunk-1",
+        "doc-langgraph-graph-api-control-flow#chunk-13"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00586642,
+      "cost_usd": 0.0011736200000000002,
+      "latency_ms": 3716.2642999992386,
+      "tokens_in": 1918,
+      "tokens_out": 259,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 21,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.2e-07,
+          "latency_ms": 632.4614999994083
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1897,
+          "tokens_cached": 0,
+          "tokens_out": 259,
+          "cost_usd": 0.0011732000000000001,
+          "latency_ms": 3077.3411999998643
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes how conditional edges and the 'check_punchline' function determine the next step after 'generate_joke', matching the reference answer and providing additional correct implementation details.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008852
+      }
+    },
+    {
+      "id": "q-0020",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you view the history of a thread's state in the LangGraph Graph API?",
+      "answer": "You can view the history of a thread's state in the LangGraph Graph API by calling `graph.get_state_history(config)` with a config dictionary specifying the `thread_id`. This method returns a list of `StateSnapshot` objects ordered chronologically, with the most recent checkpoint first. Example usage:\n\n```python\nconfig = {\n    \"configurable\": {\n        \"thread_id\": \"1\"\n    }\n}\nlist(graph.get_state_history(config))\n```\n\nThis will provide the full chronological history of the graph execution for the given thread ID [1][3][4].",
+      "retrieved_ids": [
+        "doc-langgraph-add-memory#chunk-73",
+        "doc-langgraph-backward-compatibility#chunk-3",
+        "doc-langgraph-checkpointers#chunk-10",
+        "doc-langgraph-add-memory#chunk-74",
+        "doc-langgraph-use-subgraphs#chunk-35"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-73",
+        "doc-langgraph-checkpointers#chunk-10",
+        "doc-langgraph-add-memory#chunk-74"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.003998359999999999,
+      "cost_usd": 0.0007999600000000001,
+      "latency_ms": 2012.5471999999718,
+      "tokens_in": 1557,
+      "tokens_out": 115,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 18,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.6e-07,
+          "latency_ms": 480.11159999987285
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1539,
+          "tokens_cached": 0,
+          "tokens_out": 115,
+          "cost_usd": 0.0007996,
+          "latency_ms": 1525.2228999997897
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes configuring 'thread_id' in the config and calling list(graph.get_state_history(config)), matching the reference and adding correct extra detail.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005978
+      }
+    },
+    {
+      "id": "q-0023",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you use the Checkpointer API in LangChain to view the history of a thread by its thread_id?",
+      "answer": "To view the history of a thread by its `thread_id` using the Checkpointer API in LangChain, you need to call the `list` method on the checkpointer with a config that includes the `thread_id` under the `configurable` key. For example:\n\n```python\nconfig = {\n    \"configurable\": {\n        \"thread_id\": \"1\"\n    }\n}\nlist(checkpointer.list(config))\n```\n\nThis will return the history of checkpoints for the specified thread ID \"1\" [2].",
+      "retrieved_ids": [
+        "doc-langgraph-checkpointers#chunk-2",
+        "doc-langgraph-add-memory#chunk-77",
+        "doc-langgraph-checkpointers#chunk-15",
+        "doc-langgraph-add-memory#chunk-70",
+        "doc-langgraph-checkpointers#chunk-3"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-77"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00412646,
+      "cost_usd": 0.00082566,
+      "latency_ms": 2090.197100000296,
+      "tokens_in": 1666,
+      "tokens_out": 105,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 23,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.6000000000000004e-07,
+          "latency_ms": 464.0968999992765
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1643,
+          "tokens_cached": 0,
+          "tokens_out": 105,
+          "cost_usd": 0.0008252,
+          "latency_ms": 1617.917800000214
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes using the checkpointer's list method with the correct configuration to view thread history by thread_id, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 2,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006016
+      }
+    },
+    {
+      "id": "q-0024",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's custom SQL agent, what should you do if you encounter an 'Unknown column' error when using the sql_db_query tool?",
+      "answer": "If you encounter an \"Unknown column 'xxxx' in 'field list'\" error when using the `sql_db_query` tool, you should use the `sql_db_schema` tool to query the correct table fields. This helps you verify the schema and correct your SQL query accordingly before retrying it [1].",
+      "retrieved_ids": [
+        "doc-langchain-sql-agent#chunk-12",
+        "doc-langgraph-sql-agent#chunk-0",
+        "doc-langchain-sql-agent#chunk-23",
+        "doc-langchain-sql-agent#chunk-22",
+        "doc-langchain-sql-agent#chunk-24"
+      ],
+      "cited_ids": [
+        "doc-langchain-sql-agent#chunk-12"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00423058,
+      "cost_usd": 0.0008465800000000001,
+      "latency_ms": 1707.499199999802,
+      "tokens_in": 1896,
+      "tokens_out": 62,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 29,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.8e-07,
+          "latency_ms": 527.4520000002667
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1867,
+          "tokens_cached": 0,
+          "tokens_out": 62,
+          "cost_usd": 0.0008460000000000001,
+          "latency_ms": 1172.96080000051
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately states that you should use the sql_db_schema tool to check the correct table fields, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 2,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00608
+      }
+    },
+    {
+      "id": "q-0021",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph's custom checkpointer design, why is it important for the checkpoint_id to be a ULID and how does this affect retrieving the latest checkpoint?",
+      "answer": "In LangGraph's custom checkpointer design, the checkpoint_id is recommended to be a ULID because ULIDs are lexicographically sortable with newer values sorting last. This property allows efficient retrieval of the latest checkpoint by performing a query ordered by checkpoint_id in descending order and limiting the result to one, i.e., `ORDER BY checkpoint_id DESC LIMIT 1`. This design ensures that \"get latest\" operations are efficient and scalable. Additionally, the lexicographical ordering supports direct lookups and avoids scanning all rows, which is critical for performance and correctness in checkpoint retrieval [1].",
+      "retrieved_ids": [
+        "doc-langgraph-checkpointers#chunk-36",
+        "doc-langgraph-checkpointers#chunk-31",
+        "doc-langgraph-checkpointers#chunk-27",
+        "doc-langgraph-checkpointers#chunk-33",
+        "doc-langgraph-checkpointers#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-langgraph-checkpointers#chunk-36"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00351664,
+      "cost_usd": 0.0007038400000000001,
+      "latency_ms": 1939.810200001375,
+      "tokens_in": 1322,
+      "tokens_out": 117,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 32,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.4e-07,
+          "latency_ms": 439.5793000003323
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1290,
+          "tokens_cached": 0,
+          "tokens_out": 117,
+          "cost_usd": 0.0007032000000000001,
+          "latency_ms": 1493.226099999447
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains the importance of ULID for lexicographical sorting and efficient retrieval, matching the reference answer and adding correct extra detail.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005906
+      }
+    },
+    {
+      "id": "q-0022",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph's Functional API, why should you read the clock inside a task rather than outside when using checkpointing and resuming workflows?",
+      "answer": "In LangGraph's Functional API, you should read the clock inside a task because tasks are checkpointed and their results are restored on resume instead of being recomputed. This ensures that the timestamp value remains consistent across pauses and resumes, preserving deterministic control flow. Reading the clock outside a task would produce different timestamps on each replay, potentially causing different branches to be taken and breaking determinism. By encapsulating the clock reading inside a task, the same timestamp is restored on resume, so the workflow branches the same way as before pausing. This approach avoids non-deterministic control flow issues when checkpointing and resuming workflows [1][2][3][5].",
+      "retrieved_ids": [
+        "doc-langgraph-functional-api#chunk-14",
+        "doc-langgraph-functional-api#chunk-21",
+        "doc-langgraph-functional-api#chunk-20",
+        "doc-langgraph-functional-api#chunk-15",
+        "doc-langgraph-functional-api#chunk-22"
+      ],
+      "cited_ids": [
+        "doc-langgraph-functional-api#chunk-14",
+        "doc-langgraph-functional-api#chunk-21",
+        "doc-langgraph-functional-api#chunk-20",
+        "doc-langgraph-functional-api#chunk-22"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00364056,
+      "cost_usd": 0.0007285600000000001,
+      "latency_ms": 2089.7174999990966,
+      "tokens_in": 1316,
+      "tokens_out": 133,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 28,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.6e-07,
+          "latency_ms": 574.8449000002438
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1288,
+          "tokens_cached": 0,
+          "tokens_out": 133,
+          "cost_usd": 0.000728,
+          "latency_ms": 1503.8405000013881
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.2,
+        "ndcg@5": 0.38685280723454163
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that reading the clock inside a task ensures consistent timestamps and deterministic control flow when resuming from a checkpoint, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006438
+      }
+    },
+    {
+      "id": "q-0027",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph, how can you determine the checkpoint namespace for a node, and what does the value of the checkpoint_ns field indicate?",
+      "answer": "In LangGraph, you can determine the checkpoint namespace for a node from within the node via the config object, specifically from the field `config[\"configurable\"][\"checkpoint_ns\"]`.\n\nThe value of the `checkpoint_ns` field indicates which graph or subgraph the checkpoint belongs to:\n\n- An empty string `\"\"` means the checkpoint belongs to the parent (root) graph.\n- A string like `\"node_name:uuid\"` means the checkpoint belongs to a subgraph invoked as the given node.\n- For nested subgraphs, namespaces are joined with `|` separators, e.g., `\"outer_node:uuid|inner_node:uuid\"`.\n\nExample code to access it inside a node:\n\n```python\nfrom langchain_core.runnables import RunnableConfig\n\ndef my_node(state: State, config: RunnableConfig):\n    checkpoint_ns = config[\"configurable\"][\"checkpoint_ns\"]\n    # \"\" for the parent graph, \"node_name:uuid\" for a subgraph\n```\n\nThis namespace helps identify the scope of the checkpoint within the graph or subgraph hierarchy [1].",
+      "retrieved_ids": [
+        "doc-langgraph-checkpointers#chunk-7",
+        "doc-langgraph-graph-api#chunk-20",
+        "doc-langgraph-checkpointers#chunk-5",
+        "doc-langgraph-checkpointers#chunk-32",
+        "doc-langchain-frontend-time-travel#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-langgraph-checkpointers#chunk-7"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00535854,
+      "cost_usd": 0.0010721399999999999,
+      "latency_ms": 3311.3843999999517,
+      "tokens_in": 1842,
+      "tokens_out": 216,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 27,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.4e-07,
+          "latency_ms": 913.2724999999482
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1815,
+          "tokens_cached": 0,
+          "tokens_out": 216,
+          "cost_usd": 0.0010715999999999998,
+          "latency_ms": 2390.7686000002286
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains how to access the checkpoint namespace, what its values mean, and provides correct details and an example, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008582
+      }
+    },
+    {
+      "id": "q-0028",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph, what are the recommended ways to define the state schema for a graph, and when should you use a Pydantic model instead of a TypedDict?",
+      "answer": "In LangGraph, the recommended ways to define the state schema for a graph are using a `TypedDict`, a `dataclass`, or a Pydantic `BaseModel`. Among these, `TypedDict` or `dataclass` are preferred for performance reasons and are suitable for most graphs. Use a Pydantic model when you need runtime validation on inputs, especially for the first node in the graph. However, note that Pydantic validation only applies to inputs of the first node, not to outputs or subsequent nodes, and it can be slower due to recursive validation. Also, the output of the graph is not an instance of a Pydantic model. For agent state schemas created with `create_agent`, only `TypedDict` is supported, and Pydantic models are not allowed.\n\nSummary:\n- Use `TypedDict` or `dataclass` for most cases (better performance).\n- Use Pydantic `BaseModel` if runtime input validation is needed.\n- Pydantic validation applies only to inputs of the first node.\n- Pydantic models are not supported for `create_agent` state schemas.\n\nThese points are supported by the following passages: [1], [2], [3].",
+      "retrieved_ids": [
+        "doc-langgraph-graph-api#chunk-5",
+        "doc-langgraph-graph-api-state#chunk-1",
+        "doc-langgraph-graph-api-state#chunk-16",
+        "doc-langgraph-graph-api-state#chunk-19",
+        "doc-langgraph-graph-api-state#chunk-9"
+      ],
+      "cited_ids": [
+        "doc-langgraph-graph-api#chunk-5",
+        "doc-langgraph-graph-api-state#chunk-1",
+        "doc-langgraph-graph-api-state#chunk-16"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0056546800000000005,
+      "cost_usd": 0.0011314800000000002,
+      "latency_ms": 3333.1313999988197,
+      "tokens_in": 1877,
+      "tokens_out": 246,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 34,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.800000000000001e-07,
+          "latency_ms": 471.95900000042457
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1843,
+          "tokens_cached": 0,
+          "tokens_out": 246,
+          "cost_usd": 0.0011308000000000002,
+          "latency_ms": 2854.0623000008054
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately covers the recommended ways to define state schema, when to use Pydantic, and adds correct extra details without contradiction.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008265999999999999
+      }
+    },
+    {
+      "id": "q-0026",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangGraph's Functional API, why is it a pitfall to use non-deterministic control flow such as reading the clock outside of a task in a workflow?",
+      "answer": "In LangGraph's Functional API, using non-deterministic control flow like reading the clock outside of a task in a workflow is a pitfall because on resume, the non-deterministic operation produces different values than on the first run. This can change the control flow and cause the workflow to take a different branch than originally taken, breaking the deterministic replay model.\n\nSpecifically, the Functional API entrypoint replays the workflow body from the beginning on resume, using cached task results to skip work already done. If non-deterministic operations such as reading the clock are done outside of tasks, their values differ on replay, which can alter branching decisions and cause mismatches in cached results and interrupts. This leads to incorrect or inconsistent workflow behavior.\n\nTo avoid this, time and randomness should be encapsulated inside tasks so that on resume, the same values are returned, preserving deterministic control flow and correct replay behavior.\n\nThis is explained in detail in the documentation, with examples showing that reading the clock inside a task ensures the same timestamp and branch are restored on resume, whereas reading it outside a task causes non-deterministic branching and potential errors.\n\nReferences: [1][2][3][4][5]",
+      "retrieved_ids": [
+        "doc-langgraph-functional-api#chunk-22",
+        "doc-langgraph-functional-api#chunk-20",
+        "doc-langgraph-backward-compatibility#chunk-7",
+        "doc-langgraph-functional-api#chunk-21",
+        "doc-langgraph-functional-api#chunk-19"
+      ],
+      "cited_ids": [
+        "doc-langgraph-functional-api#chunk-22",
+        "doc-langgraph-functional-api#chunk-20",
+        "doc-langgraph-backward-compatibility#chunk-7",
+        "doc-langgraph-functional-api#chunk-21",
+        "doc-langgraph-functional-api#chunk-19"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00523268,
+      "cost_usd": 0.0010470800000000001,
+      "latency_ms": 3409.040599999571,
+      "tokens_in": 1686,
+      "tokens_out": 241,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 34,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.800000000000001e-07,
+          "latency_ms": 443.3422000001883
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1652,
+          "tokens_cached": 0,
+          "tokens_out": 241,
+          "cost_usd": 0.0010464,
+          "latency_ms": 2956.837399999131
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that reading the clock outside a task introduces non-determinism, which can cause inconsistent workflow behavior on resume, matching the reference answer's key points.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008752
+      }
+    },
+    {
+      "id": "q-0025",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's memory management, what happens to the message history after deleting previous messages and sending a new user message?",
+      "answer": "In LangChain's memory management, after deleting previous messages from the graph state and sending a new user message, the message history is updated to exclude the deleted messages and include the new user message. The deletion is permanent in the LangGraph state, effectively removing those messages from the conversation history that the model sees. This helps keep the conversation manageable and prevents exceeding the LLM's context window.\n\nHowever, it is important to ensure that the resulting message history remains valid according to the LLM provider's requirements. For example, some providers expect the message history to start with a `user` message, and most require that `assistant` messages with tool calls are followed by corresponding `tool` result messages. If these conditions are not met, the conversation history might be invalid for the model input.\n\nThis behavior is demonstrated in examples where the earliest messages are removed using `RemoveMessage` and then new user messages are added, with the updated message list streamed to the model. The state key used must support the `add_messages` reducer (like `MessagesState`) for `RemoveMessage` to work correctly.\n\nIn summary, deleting messages removes them permanently from the state, and new user messages are appended, resulting in a trimmed and valid message history for the model input [1][2][3][4][5].",
+      "retrieved_ids": [
+        "doc-langgraph-add-memory#chunk-57",
+        "doc-langchain-short-term-memory#chunk-15",
+        "doc-langchain-short-term-memory#chunk-14",
+        "doc-langgraph-add-memory#chunk-58",
+        "doc-langgraph-add-memory#chunk-52"
+      ],
+      "cited_ids": [
+        "doc-langgraph-add-memory#chunk-57",
+        "doc-langchain-short-term-memory#chunk-15",
+        "doc-langchain-short-term-memory#chunk-14",
+        "doc-langgraph-add-memory#chunk-58",
+        "doc-langgraph-add-memory#chunk-52"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00571848,
+      "cost_usd": 0.00114408,
+      "latency_ms": 3888.986100000693,
+      "tokens_in": 1835,
+      "tokens_out": 262,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 24,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.8e-07,
+          "latency_ms": 528.3863999993628
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1811,
+          "tokens_cached": 0,
+          "tokens_out": 262,
+          "cost_usd": 0.0011436,
+          "latency_ms": 3352.5942000014766
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer correctly explains that deleted messages are removed and new messages are added, but it omits that the AI's response is also included in the updated history, which is an essential detail from the reference.",
+        "is_refusal": false,
+        "n_claims": 9,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009687999999999999
+      }
+    },
+    {
+      "id": "q-0029",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What are the main reasons developers use multi-agent patterns in LangChain?",
+      "answer": "The main reasons developers use multi-agent patterns in LangChain are:\n\n1. **Context management**: To provide specialized knowledge without overwhelming the model's context window, selectively surfacing relevant information due to limited context and latency constraints.\n2. **Distributed development**: To allow different teams to develop and maintain capabilities independently, composing them into a larger system with clear boundaries.\n3. **Parallelization**: To spawn specialized workers for subtasks and execute them concurrently for faster results.\n\nAdditionally, multi-agent patterns help when a single agent has too many tools and makes poor decisions, when tasks require specialized knowledge with extensive context, or when sequential constraints must be enforced to unlock capabilities after certain conditions are met. Central to multi-agent design is context engineering, ensuring each agent has access to the right data for its task [2].",
+      "retrieved_ids": [
+        "doc-langchain-multi-agent-index#chunk-2",
+        "doc-langchain-multi-agent-index#chunk-1",
+        "doc-langchain-multi-agent-index#chunk-3",
+        "doc-learn#chunk-6",
+        "doc-concepts-products#chunk-4"
+      ],
+      "cited_ids": [
+        "doc-langchain-multi-agent-index#chunk-1"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00393628,
+      "cost_usd": 0.00078748,
+      "latency_ms": 2840.9231000005093,
+      "tokens_in": 1330,
+      "tokens_out": 163,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 14,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 2.8e-07,
+          "latency_ms": 625.3149000003759
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1316,
+          "tokens_cached": 0,
+          "tokens_out": 163,
+          "cost_usd": 0.0007872,
+          "latency_ms": 2209.373099998629
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer covers all main reasons from the reference and adds relevant, accurate details without contradiction.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006685999999999999
+      }
+    },
+    {
+      "id": "q-0031",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the LangChain SQL assistant tutorial, what are the recommended approaches for handling skills of different sizes in terms of context management?",
+      "answer": "The LangChain SQL assistant tutorial recommends different approaches for handling skills based on their size in tokens/words for efficient context management:\n\n- **Small skills** (< 1K tokens / ~750 words): Include these directly in the system prompt and use prompt caching for cost savings and faster responses.\n- **Medium skills** (1-10K tokens / ~750-7.5K words): Use on-demand loading to avoid context overhead, as demonstrated in the tutorial.\n- **Large skills** (> 10K tokens / ~7.5K words, or > 5-10% of context window): Apply progressive disclosure techniques such as pagination, search-based loading, or hierarchical exploration to prevent excessive context consumption.\n\nThe choice depends on system requirements, balancing speed (in-memory) versus dynamic skill management (file-based or remote storage) without code changes [2].",
+      "retrieved_ids": [
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-39",
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-36",
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-37",
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-0",
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-36"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0040665,
+      "cost_usd": 0.0008137,
+      "latency_ms": 2766.476499999044,
+      "tokens_in": 1362,
+      "tokens_out": 174,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 548.0384000002232
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1337,
+          "tokens_cached": 0,
+          "tokens_out": 174,
+          "cost_usd": 0.0008132,
+          "latency_ms": 2211.682399998608
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately summarizes the recommended approaches for small, medium, and large skills, matching the reference answer and adding some extra correct detail.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006462000000000001
+      }
+    },
+    {
+      "id": "q-0034",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you set the API key for using Ollama with LangChain?",
+      "answer": "The provided documentation context does not contain information on how to set the API key for using Ollama with LangChain. Therefore, I don't know based on the documentation provided.",
+      "retrieved_ids": [
+        "doc-javascript-integrations-embeddings-ollama#chunk-0",
+        "doc-python-integrations-embeddings-ollama#chunk-0",
+        "doc-javascript-integrations-chat-ollama#chunk-3",
+        "doc-javascript-integrations-llms-ollama#chunk-0",
+        "doc-javascript-integrations-llms-ollama#chunk-9"
+      ],
+      "cited_ids": [],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00135432,
+      "cost_usd": 0.00027112,
+      "latency_ms": 1432.5755999998364,
+      "tokens_in": 557,
+      "tokens_out": 34,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 16,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.2e-07,
+          "latency_ms": 578.2844999994268
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 541,
+          "tokens_cached": 0,
+          "tokens_out": 34,
+          "cost_usd": 0.0002708,
+          "latency_ms": 847.5769000015134
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": null,
+        "citation_precision": null,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer correctly states that the documentation context does not provide the required information.",
+        "is_refusal": true,
+        "n_claims": 0,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.002502
+      }
+    },
+    {
+      "id": "q-0032",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you use the useStream and useSubmissionQueue hooks from @langchain/react to manage message submission and pending work in a chat application?",
+      "answer": "You can use the `useStream` hook to connect to your agent and manage the streaming messages state, and pair it with the `useSubmissionQueue` hook to handle message submission and queue pending work.\n\n1. Initialize the stream with `useStream<typeof myAgent>`, providing the `apiUrl` and `assistantId` for your agent.\n2. Create a submission queue by passing the stream to `useSubmissionQueue(stream)`.\n3. To submit a message, call `stream.submit()` with the message payload.\n4. Use `queue.size` to get the count of pending submissions and `queue.entries` to access the queued items.\n5. Render the pending queue as needed, and use `queue.cancel()` or `queue.clear()` to remove queued items before processing.\n\nExample in React:\n\n```tsx\nimport { useStream, useSubmissionQueue } from \"@langchain/react\";\n\nfunction Chat() {\n  const stream = useStream<typeof myAgent>({\n    apiUrl: \"http://localhost:2024\",\n    assistantId: \"simple_agent\",\n  });\n  const queue = useSubmissionQueue(stream);\n\n  const handleSubmit = (text: string) => {\n    stream.submit({\n      messages: [{ type: \"human\", content: text }],\n    });\n  };\n\n  const pendingCount = queue.size;\n  const entries = queue.entries;\n\n  return (\n    <div>\n      <MessageList messages={stream.messages} />\n      {pendingCount > 0 && <QueueList entries={entries} queue={queue} />}\n      <ChatInput onSubmit={handleSubmit} />\n    </div>\n  );\n}\n```\n\nThis setup allows you to submit messages while a run is in progress, queue submissions that should wait behind active requests, and render or manage pending work accordingly [1][3].",
+      "retrieved_ids": [
+        "doc-langchain-frontend-message-queues#chunk-3",
+        "doc-langchain-frontend-overview#chunk-3",
+        "doc-langchain-frontend-message-queues#chunk-4",
+        "doc-langchain-frontend-human-in-the-loop#chunk-2",
+        "doc-langchain-frontend-branching-chat#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-langchain-frontend-message-queues#chunk-3",
+        "doc-langchain-frontend-message-queues#chunk-4"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00640458,
+      "cost_usd": 0.0012813800000000001,
+      "latency_ms": 4502.965400000903,
+      "tokens_in": 1775,
+      "tokens_out": 364,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 29,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.8e-07,
+          "latency_ms": 446.197299999767
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1746,
+          "tokens_cached": 0,
+          "tokens_out": 364,
+          "cost_usd": 0.0012808000000000001,
+          "latency_ms": 4049.976799999058
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes how to use useStream and useSubmissionQueue, including submitting messages, accessing queue entries and size, and canceling or clearing items, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008832
+      }
+    },
+    {
+      "id": "q-0030",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you filter available tools for a LangChain agent based on user-specific preferences stored in a store?",
+      "answer": "You can filter available tools for a LangChain agent based on user-specific preferences stored in a store by creating a middleware function that intercepts the model call, reads the user's enabled tools from the store, and overrides the request's tools accordingly. Specifically:\n\n1. Define a context schema with user identification (e.g., user_id).\n2. Implement a middleware function decorated with `@wrap_model_call` that:\n   - Retrieves the user_id from the request context.\n   - Accesses the store to get the user's feature flags or enabled tools.\n   - Filters the tools list to include only those enabled for the user.\n   - Overrides the request with the filtered tools.\n3. Pass this middleware to the agent during creation.\n\nExample in Python:\n\n```python\nfrom dataclasses import dataclass\nfrom langchain.agents import create_agent\nfrom langchain.agents.middleware import wrap_model_call, ModelRequest, ModelResponse\nfrom typing import Callable\nfrom langgraph.store.memory import InMemoryStore\n\n@dataclass\nclass Context:\n    user_id: str\n\n@wrap_model_call\ndef store_based_tools(\n    request: ModelRequest,\n    handler: Callable[[ModelRequest], ModelResponse]\n) -> ModelResponse:\n    user_id = request.runtime.context.user_id\n    store = request.runtime.store\n    feature_flags = store.get((\"features\",), user_id)\n\n    if feature_flags:\n        enabled_features = feature_flags.value.get(\"enabled_tools\", [])\n        tools = [t for t in request.tools if t.name in enabled_features]\n        request = request.override(tools=tools)\n\n    return handler(request)\n\nagent = create_agent(\n    model=\"gpt-5.5\",\n    tools=[search_tool, analysis_tool, export_tool],\n    middleware=[store_based_tools],\n    context_schema=Context,\n    store=InMemoryStore()\n)\n```\n\nThis approach ensures that only the tools enabled for the specific user in the store are available to the agent during execution [1][2].",
+      "retrieved_ids": [
+        "doc-langchain-tools#chunk-38",
+        "doc-langchain-context-engineering#chunk-23",
+        "doc-langchain-tools#chunk-37",
+        "doc-langchain-context-engineering#chunk-22",
+        "doc-langchain-context-engineering#chunk-29"
+      ],
+      "cited_ids": [
+        "doc-langchain-tools#chunk-38",
+        "doc-langchain-context-engineering#chunk-23"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00659442,
+      "cost_usd": 0.0013192200000000003,
+      "latency_ms": 5199.603899998692,
+      "tokens_in": 1714,
+      "tokens_out": 401,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 21,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.2e-07,
+          "latency_ms": 581.7784999999276
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1693,
+          "tokens_cached": 0,
+          "tokens_out": 401,
+          "cost_usd": 0.0013188000000000002,
+          "latency_ms": 4611.171700000341
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes using a middleware function to filter tools based on user preferences from a store, matching the reference answer and providing additional correct implementation details.",
+        "is_refusal": false,
+        "n_claims": 9,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009178
+      }
+    },
+    {
+      "id": "q-0035",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "When should a developer use custom workflows in LangChain instead of standard patterns like subagents or skills?",
+      "answer": "A developer should use custom workflows in LangChain when standard patterns such as subagents or skills do not fit their requirements. Specifically, custom workflows are appropriate if the use case requires mixing deterministic logic with agentic behavior, or involves complex routing or multi-stage processing. Custom workflows allow each node to be a simple function, an LLM call, or an entire agent with tools, and can embed other architectures like multi-agent systems as single nodes. This flexibility is useful for bespoke execution flows that go beyond the capabilities of standard multi-agent patterns [1][3].",
+      "retrieved_ids": [
+        "doc-langchain-multi-agent-custom-workflow#chunk-2",
+        "doc-langchain-multi-agent-index#chunk-3",
+        "doc-langchain-multi-agent-index#chunk-2",
+        "doc-learn#chunk-6",
+        "doc-langchain-multi-agent-index#chunk-0"
+      ],
+      "cited_ids": [
+        "doc-langchain-multi-agent-custom-workflow#chunk-2",
+        "doc-langchain-multi-agent-index#chunk-2"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0036124,
+      "cost_usd": 0.0007228000000000001,
+      "latency_ms": 2070.4557999997633,
+      "tokens_in": 1382,
+      "tokens_out": 111,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 20,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.0000000000000003e-07,
+          "latency_ms": 495.979699999225
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1362,
+          "tokens_cached": 0,
+          "tokens_out": 111,
+          "cost_usd": 0.0007224000000000001,
+          "latency_ms": 1567.014599999311
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately covers all key points from the reference and adds relevant, non-contradictory detail.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.0059180000000000005
+      }
+    },
+    {
+      "id": "q-0037",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's streaming tool calls pattern, how can you access the completed tool call message from a streaming chunk of type 'custom'?",
+      "answer": "You can access the completed tool call message from a streaming chunk of type \"custom\" by inspecting the `tool_calls` field in the chunk's data. For example, within the streaming loop:\n\n```python\nif chunk[\"type\"] == \"custom\":\n    print(f\"Tool calls: {chunk['data'].tool_calls}\")\n```\n\nThis will give you the completed tool call messages during streaming [2][5].",
+      "retrieved_ids": [
+        "doc-langchain-streaming#chunk-25",
+        "doc-langchain-streaming#chunk-28",
+        "doc-langchain-streaming#chunk-22",
+        "doc-langchain-streaming#chunk-30",
+        "doc-langchain-streaming#chunk-27"
+      ],
+      "cited_ids": [
+        "doc-langchain-streaming#chunk-28",
+        "doc-langchain-streaming#chunk-27"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00404254,
+      "cost_usd": 0.0008089400000000001,
+      "latency_ms": 2093.9213000001473,
+      "tokens_in": 1712,
+      "tokens_out": 84,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 27,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.4e-07,
+          "latency_ms": 517.7722999997059
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1685,
+          "tokens_cached": 0,
+          "tokens_out": 84,
+          "cost_usd": 0.0008084,
+          "latency_ms": 1569.9334999990242
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer correctly explains that 'chunk[\"data\"].tool_calls' provides access to the completed tool call message for a 'custom' chunk type, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006272000000000001
+      }
+    },
+    {
+      "id": "q-0033",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you use the LangChain model's tool calling feature to execute a tool and incorporate its result into the model's final response?",
+      "answer": "To use LangChain's tool calling feature to execute a tool and incorporate its result into the model's final response, follow these steps:\n\n1. Bind your user-defined tools to the model using `model.bind_tools([tool])`.\n\n2. Invoke the model with the user's input messages. The model will generate a response that includes tool calls.\n\n3. For each tool call in the model's response, execute the corresponding tool with the provided arguments.\n\n4. Append the tool execution results as `ToolMessage`s to the conversation messages.\n\n5. Invoke the model again with the updated messages including tool results to get the final response.\n\nThis creates a conversation loop where the model uses tool results to generate its final answer.\n\nExample in Python:\n\n```python\nfrom langchain.messages import HumanMessage, ToolMessage\n\nmessages = [HumanMessage(content=\"What's the status of order ORD-12345?\")]\nresponse = llm_with_tools.invoke(messages)\n\nif response.tool_calls:\n    messages.append(response)  # Add AI response with tool calls\n\n    for tool_call in response.tool_calls:\n        tool_fn = {\"get_order_status\": get_order_status,\n                   \"get_account_balance\": get_account_balance}[tool_call[\"name\"]]\n        result = tool_fn.invoke(tool_call[\"args\"])\n        messages.append(ToolMessage(content=str(result), tool_call_id=tool_call[\"id\"]))\n\n    final_response = llm_with_tools.invoke(messages)\n    print(final_response.content)\n```\n\nThis pattern is also shown in other examples, including with ChatGoogleGenerativeAI and JavaScript, where the model generates tool calls, you execute them, append results, and then invoke the model again for the final response [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-python-integrations-chat-oci-generative-ai#chunk-10",
+        "doc-langchain-models#chunk-24",
+        "doc-python-integrations-chat-google-generative-ai#chunk-29",
+        "doc-langchain-models#chunk-26",
+        "doc-contributing-implement-langchain#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-python-integrations-chat-oci-generative-ai#chunk-10",
+        "doc-langchain-models#chunk-24",
+        "doc-python-integrations-chat-google-generative-ai#chunk-29",
+        "doc-langchain-models#chunk-26"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0067005400000000005,
+      "cost_usd": 0.00134054,
+      "latency_ms": 6511.783799998739,
+      "tokens_in": 1989,
+      "tokens_out": 347,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 27,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.4e-07,
+          "latency_ms": 2727.9825000005076
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1962,
+          "tokens_cached": 0,
+          "tokens_out": 347,
+          "cost_usd": 0.00134,
+          "latency_ms": 3776.978500000041
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the process of binding tools, invoking the model, executing tool calls, appending results, and reinvoking the model, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 8,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009354
+      }
+    },
+    {
+      "id": "q-0036",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain, what is the purpose of using the SubAgentMiddleware from Deep Agents when creating an agent?",
+      "answer": "The purpose of using `SubAgentMiddleware` from Deep Agents when creating an agent in LangChain is to expose and manage the subagents you provide to the agent. It acts as middleware that enables the agent to delegate tasks to these subagents, each configured with their own models and tools. This middleware is essential for integrating subagents into the agent's workflow, allowing for modular and specialized task handling within the agent. Without at least one synchronous subagent, `SubAgentMiddleware` is not attached, and the agent runs without delegation. The middleware supports dynamic prompt control, state management, and selective tool access as part of the broader middleware capabilities in LangChain agents [1][3][2][4].",
+      "retrieved_ids": [
+        "doc-langchain-middleware-built-in#chunk-59",
+        "doc-javascript-releases-langchain-v1#chunk-2",
+        "doc-deepagents-subagents#chunk-4",
+        "doc-python-releases-langchain-v1#chunk-2",
+        "doc-langchain-middleware-built-in#chunk-0"
+      ],
+      "cited_ids": [
+        "doc-langchain-middleware-built-in#chunk-59",
+        "doc-deepagents-subagents#chunk-4",
+        "doc-javascript-releases-langchain-v1#chunk-2",
+        "doc-python-releases-langchain-v1#chunk-2"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00312644,
+      "cost_usd": 0.00062564,
+      "latency_ms": 2555.612199999814,
+      "tokens_in": 1021,
+      "tokens_out": 141,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 22,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.4e-07,
+          "latency_ms": 518.6668000005739
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 999,
+          "tokens_cached": 0,
+          "tokens_out": 141,
+          "cost_usd": 0.0006252,
+          "latency_ms": 2030.5838999993284
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer correctly states that SubAgentMiddleware enables delegation to subagents and modular task handling, but it omits the key point about isolating context and keeping the main agent's context window clean.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.0058200000000000005
+      }
+    },
+    {
+      "id": "q-0039",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you configure a custom middleware in LangChain to omit input payloads from its trace, and what happens if both a global and a middleware-specific trace policy are set?",
+      "answer": "To configure a custom middleware in LangChain to omit input payloads from its trace, you set the middleware's `trace_policy` attribute to a `TracePolicy` that uses `omit_payload` for `process_inputs`. For example:\n\n```python\nfrom langchain.agents.middleware import AgentMiddleware, TracePolicy, omit_payload\n\nclass MyMiddleware(AgentMiddleware):\n    trace_policy = TracePolicy(process_inputs=omit_payload)\n```\n\nThis setup causes the middleware hook spans to exclude the input payload from tracing, which can optimize performance when the full input history is not needed [1].\n\nIf both a global default trace policy and a middleware-specific `trace_policy` are set, the middleware's own `trace_policy` takes precedence and overrides the global default [1]. You can configure a global default trace policy like this:\n\n```python\nfrom langchain.agents.middleware import configure_trace_policy, TracePolicy, omit_payload\n\nconfigure_trace_policy(TracePolicy(process_inputs=omit_payload))  # pass None to clear\n```\n\nBut any middleware with its own `trace_policy` will use that instead of the global one.",
+      "retrieved_ids": [
+        "doc-langchain-middleware-custom#chunk-20",
+        "doc-javascript-releases-langchain-v1#chunk-4",
+        "doc-langchain-middleware-built-in#chunk-0",
+        "doc-langchain-middleware-custom#chunk-9",
+        "doc-python-releases-langchain-v1#chunk-4"
+      ],
+      "cited_ids": [
+        "doc-langchain-middleware-custom#chunk-20"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.004558680000000001,
+      "cost_usd": 0.0009122800000000001,
+      "latency_ms": 3296.367299999474,
+      "tokens_in": 1417,
+      "tokens_out": 224,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 34,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.800000000000001e-07,
+          "latency_ms": 448.974900000394
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1383,
+          "tokens_cached": 0,
+          "tokens_out": 224,
+          "cost_usd": 0.0009116000000000001,
+          "latency_ms": 2840.389699998923
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains how to configure the middleware to omit input payloads and correctly states that the middleware's trace_policy overrides the global default.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006964
+      }
+    },
+    {
+      "id": "q-0038",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you generate embeddings for documents using the IsaacusEmbeddings class in LangChain?",
+      "answer": "To generate embeddings for documents using the IsaacusEmbeddings class in LangChain, follow these steps:\n\n1. Install the Isaacus package:\n```shell\npip install -qU langchain-isaacus\n```\n\n2. Set your ISAACUS_API_KEY environment variable, for example by prompting the user:\n```python\nimport getpass\nimport os\n\nif not os.environ.get(\"ISAACUS_API_KEY\"):\n    os.environ[\"ISAACUS_API_KEY\"] = getpass.getpass(\"Enter API key for Isaacus: \")\n```\n\n3. Import and instantiate the IsaacusEmbeddings class with the desired model:\n```python\nfrom langchain_isaacus import IsaacusEmbeddings\n\nembeddings = IsaacusEmbeddings(model=\"kanon-2-embedder\")\n```\n\n4. Generate embeddings for document content using the `embed_query` method:\n```python\nvector = embeddings.embed_query(documents[0].page_content)\n```\n\nThis will produce a vector embedding (e.g., length 1536) for the given document text. You can similarly embed multiple documents or queries using this interface [1][2][5].",
+      "retrieved_ids": [
+        "doc-langchain-knowledge-base#chunk-9",
+        "doc-deepagents-rag#chunk-19",
+        "doc-python-integrations-embeddings-index#chunk-35",
+        "doc-javascript-integrations-embeddings-index#chunk-3",
+        "doc-python-integrations-retrievers-graph-rag#chunk-10"
+      ],
+      "cited_ids": [
+        "doc-langchain-knowledge-base#chunk-9",
+        "doc-deepagents-rag#chunk-19",
+        "doc-python-integrations-retrievers-graph-rag#chunk-10"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00427036,
+      "cost_usd": 0.0008543600000000001,
+      "latency_ms": 3502.7535000008356,
+      "tokens_in": 1221,
+      "tokens_out": 233,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 18,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.6e-07,
+          "latency_ms": 530.1593999993202
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1203,
+          "tokens_cached": 0,
+          "tokens_out": 233,
+          "cost_usd": 0.000854,
+          "latency_ms": 2964.2652999991697
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes creating an IsaacusEmbeddings instance with a model and using embed_query on document content, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00684
+      }
+    },
+    {
+      "id": "q-0041",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you configure the ToolRetryMiddleware in LangChain to retry failed tool calls only for specific tools, and what parameter controls this behavior?",
+      "answer": "You can configure `ToolRetryMiddleware` to retry failed tool calls only for specific tools by passing a list of tool instances or tool names to the `tools` parameter. This parameter controls which tools the retry logic applies to. If `tools=None`, the retry applies to all tools.\n\nExample usage:\n\n```python\nToolRetryMiddleware(\n    max_retries=2,\n    tools=[\"search\", \"fetch_url\"],  # Only retry these specific tools\n    retry_on=(TimeoutError, ConnectionError),\n)\n```\n\nThis scopes the retry middleware to only the specified tools rather than retrying all tool calls [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-langchain-middleware-built-in#chunk-8",
+        "doc-deepagents-fault-tolerance#chunk-8",
+        "doc-langchain-middleware-built-in#chunk-10",
+        "doc-deepagents-fault-tolerance#chunk-2",
+        "doc-langchain-middleware-built-in#chunk-6"
+      ],
+      "cited_ids": [
+        "doc-langchain-middleware-built-in#chunk-8",
+        "doc-deepagents-fault-tolerance#chunk-8",
+        "doc-langchain-middleware-built-in#chunk-10",
+        "doc-deepagents-fault-tolerance#chunk-2"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00477656,
+      "cost_usd": 0.00095576,
+      "latency_ms": 2400.3176000005624,
+      "tokens_in": 1896,
+      "tokens_out": 130,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 28,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.6e-07,
+          "latency_ms": 616.9456999996328
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1868,
+          "tokens_cached": 0,
+          "tokens_out": 130,
+          "cost_usd": 0.0009552,
+          "latency_ms": 1776.2883999985206
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains the use of the 'tools' parameter and matches the reference answer's content.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006834
+      }
+    },
+    {
+      "id": "q-0040",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "When should a developer use the router pattern versus the subagents pattern in LangChain multi-agent systems?",
+      "answer": "A developer should use the **router pattern** when they need specialized preprocessing, custom routing logic, or explicit control over parallel execution. The router pattern involves a routing step that classifies input and directs it to one or more specialized agents, synthesizing results into a combined response. It typically does not maintain ongoing conversation state and acts as a classification dispatcher.\n\nIn contrast, the **subagents pattern** is suitable when the developer wants a main agent (supervisor) to dynamically decide which subagents to call across multiple turns, maintaining conversation context. The main agent coordinates subagents as tools, with all routing passing through it. This pattern supports centralized control and parallel execution but does not allow subagents to interact directly with the user.\n\nIn summary:\n- Use **router** for specialized preprocessing, custom routing, and explicit parallel execution control without maintaining conversation state.\n- Use **subagents** when you want the LLM to dynamically decide which agents to call, with centralized control and conversation context maintained by the main agent.\n\nThis distinction is summarized in the tip from the knowledge base and the key characteristics of each pattern [1][2][4][5].",
+      "retrieved_ids": [
+        "doc-langchain-multi-agent-index#chunk-3",
+        "doc-langchain-multi-agent-index#chunk-2",
+        "doc-langchain-multi-agent-index#chunk-4",
+        "doc-langchain-multi-agent-subagents#chunk-1",
+        "doc-langchain-multi-agent-router-knowledge-base#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-langchain-multi-agent-index#chunk-3",
+        "doc-langchain-multi-agent-index#chunk-2",
+        "doc-langchain-multi-agent-subagents#chunk-1",
+        "doc-langchain-multi-agent-router-knowledge-base#chunk-2"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.004754400000000001,
+      "cost_usd": 0.0009511999999999999,
+      "latency_ms": 3373.6343999989913,
+      "tokens_in": 1481,
+      "tokens_out": 229,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 20,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.0000000000000003e-07,
+          "latency_ms": 680.5881999989651
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1461,
+          "tokens_cached": 0,
+          "tokens_out": 229,
+          "cost_usd": 0.0009507999999999999,
+          "latency_ms": 2685.765399999582
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.2,
+        "ndcg@5": 0.38685280723454163
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains when to use each pattern, matching the reference and adding correct extra details.",
+        "is_refusal": false,
+        "n_claims": 8,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.007924
+      }
+    },
+    {
+      "id": "q-0042",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's elicitation feature for server requests during tool execution, what happens when you resume with `Command(resume={\"responses\": {key: answer}})` and what should developers be cautious about?",
+      "answer": "When you resume with `Command(resume={\"responses\": {key: answer}})`, the tool reruns from the beginning, including any work performed before the server asked for input. Developers must ensure that this repeated work is safe to repeat and does not cause duplicated side effects. This is because resuming effectively restarts the tool call, so any side effects from the initial run before the pause could otherwise be duplicated unintentionally [1][2][3].",
+      "retrieved_ids": [
+        "doc-langchain-mcp-tools#chunk-14",
+        "doc-javascript-migrate-langchain-mcp-adapters#chunk-11",
+        "doc-langchain-mcp-tools#chunk-13",
+        "doc-python-migrate-langchain-mcp-adapters#chunk-13",
+        "doc-langchain-mcp-tools#chunk-12"
+      ],
+      "cited_ids": [
+        "doc-langchain-mcp-tools#chunk-14",
+        "doc-javascript-migrate-langchain-mcp-adapters#chunk-11",
+        "doc-langchain-mcp-tools#chunk-13"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00390482,
+      "cost_usd": 0.0007816200000000001,
+      "latency_ms": 2651.0531999992963,
+      "tokens_in": 1625,
+      "tokens_out": 92,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 41,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 8.200000000000001e-07,
+          "latency_ms": 885.3963000001386
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1584,
+          "tokens_cached": 0,
+          "tokens_out": 92,
+          "cost_usd": 0.0007808000000000001,
+          "latency_ms": 1758.6056000000099
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that resuming reruns the tool from the beginning and warns about duplicated side effects, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006128
+      }
+    },
+    {
+      "id": "q-0043",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What are the main steps involved in building a semantic search engine over a PDF using LangChain?",
+      "answer": "The main steps to build a semantic search engine over a PDF using LangChain are:\n\n1. Create `Document` objects from the PDF.\n2. Generate embeddings for the document content.\n3. Load and split the PDF into chunks.\n4. Index these chunks in a vector store and query by similarity.\n5. Wrap the vector store as a retriever for use in retrieval workflows.\n\nAdditionally, a minimal Retrieval-Augmented Generation (RAG) implementation can be built on top of this search engine [2].",
+      "retrieved_ids": [
+        "doc-langchain-knowledge-base#chunk-26",
+        "doc-langchain-knowledge-base#chunk-0",
+        "doc-langchain-knowledge-base#chunk-2",
+        "doc-langchain-knowledge-base#chunk-15",
+        "doc-learn#chunk-4"
+      ],
+      "cited_ids": [
+        "doc-langchain-knowledge-base#chunk-0"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00253238,
+      "cost_usd": 0.0005067800000000001,
+      "latency_ms": 2349.5545000005222,
+      "tokens_in": 877,
+      "tokens_out": 102,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 19,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3.8e-07,
+          "latency_ms": 568.0002999997669
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 858,
+          "tokens_cached": 0,
+          "tokens_out": 102,
+          "cost_usd": 0.0005064000000000001,
+          "latency_ms": 1772.61019999969
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately lists all the main steps from the reference and includes the RAG implementation detail.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.004844
+      }
+    },
+    {
+      "id": "q-0044",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the `useStream` hook in LangChain's tool calling feature help synchronize tool calls with streamed text in the UI?",
+      "answer": "The `useStream` hook keeps the `toolCalls` array in sync with the streamed text from the agent, allowing tool calls to appear immediately as the agent emits them, even before the tool finishes executing. This enables the UI to show the AI's streaming text, a loading card for the tool call as soon as it is emitted, and then update the card with the tool's result once execution completes. Tool calls update in place by transitioning the same `callId` from `\"running\"` to `\"finished\"` or `\"error\"`, so the UI re-renders the same component with updated state seamlessly [1].",
+      "retrieved_ids": [
+        "doc-langchain-frontend-tool-calling#chunk-10",
+        "doc-langchain-frontend-tool-calling#chunk-2",
+        "doc-langchain-frontend-integrations-overview#chunk-0",
+        "doc-javascript-releases-langgraph-v1#chunk-5",
+        "doc-langchain-frontend-tool-calling#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-langchain-frontend-tool-calling#chunk-10"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0029985199999999997,
+      "cost_usd": 0.00060012,
+      "latency_ms": 2659.248200001457,
+      "tokens_in": 1029,
+      "tokens_out": 124,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 26,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.2e-07,
+          "latency_ms": 443.8319999990199
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1003,
+          "tokens_cached": 0,
+          "tokens_out": 124,
+          "cost_usd": 0.0005996,
+          "latency_ms": 2209.049600000071
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains how useStream synchronizes tool calls with streamed text and describes the UI behavior, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005284
+      }
+    },
+    {
+      "id": "q-0046",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In LangChain's Human-in-the-Loop (HITL) feature, what happens if you reject an action without providing a message in the HITLResponse?",
+      "answer": "If you reject an action without providing a message in the HITLResponse, the backend uses a default message that informs the model the tool was not executed and instructs it not to retry the same tool call unless the user asks. This default message helps guide the agent on how to proceed after rejection. For side-effecting tools, it is recommended to pass a clear message to tell the agent whether to abandon the action, ask a follow-up question, or try a safer alternative [2].",
+      "retrieved_ids": [
+        "doc-langchain-human-in-the-loop#chunk-0",
+        "doc-langchain-frontend-human-in-the-loop#chunk-8",
+        "doc-langchain-frontend-human-in-the-loop#chunk-12",
+        "doc-langchain-frontend-human-in-the-loop#chunk-7",
+        "doc-langchain-frontend-human-in-the-loop#chunk-0"
+      ],
+      "cited_ids": [
+        "doc-langchain-frontend-human-in-the-loop#chunk-8"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00299466,
+      "cost_usd": 0.0005994599999999999,
+      "latency_ms": 2021.7778000005637,
+      "tokens_in": 1138,
+      "tokens_out": 98,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 33,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.6e-07,
+          "latency_ms": 501.5588000005664
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1105,
+          "tokens_cached": 0,
+          "tokens_out": 98,
+          "cost_usd": 0.0005987999999999999,
+          "latency_ms": 1513.647600000695
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the default message behavior and adds correct, relevant detail about best practices for side-effecting tools.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005136
+      }
+    },
+    {
+      "id": "q-0045",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you stream both message tokens and tool call outputs when using an agent created with LangChain's create_agent function?",
+      "answer": "You can stream both message tokens and tool call outputs by using the `stream_events` method of the agent created with `create_agent` and specifying appropriate `stream_mode` or using event streaming with `version=\"v3\"`.\n\n1. To stream incremental message chunks generated by all LLM calls, specify `stream_mode=\"messages\"`. This streams partial JSON tool calls as they are generated as well as message tokens [1][4].\n\n2. To access completed messages with parsed tool calls, if messages are tracked in the agent's state (as with `create_agent`), use `stream_mode=[\"messages\", \"updates\"]` to get completed messages through state updates [1].\n\n3. Alternatively, use event streaming with `stream_events(..., version=\"v3\")` which returns a run object with typed projections for messages, tool calls, and state. You can iterate over `stream.messages` to get message tokens and also observe tool call events in the stream [3].\n\n4. The example in [2] shows how to create an agent with Discord tools and execute it in streaming mode using `stream_events` with `version=\"v3\"`. You can then iterate over the stream to print messages and tool outputs as they arrive.\n\n5. For more detailed streaming of tool call chunks and results, you can use the lower-level `stream` method with `stream_mode=\"messages\"` and inspect chunks for tool call data and tool results as shown in [4].\n\nIn summary, use `agent_executor.stream_events(..., version=\"v3\")` to stream messages and tool calls concurrently, and consume the stream's projections for messages and updates to get both message tokens and tool call outputs in real time [1][2][3][4].",
+      "retrieved_ids": [
+        "doc-langchain-streaming#chunk-22",
+        "doc-python-integrations-tools-discord#chunk-8",
+        "doc-langchain-event-streaming#chunk-0",
+        "doc-deepagents-streaming#chunk-19",
+        "doc-langchain-overview#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-langchain-streaming#chunk-22",
+        "doc-deepagents-streaming#chunk-19",
+        "doc-langchain-event-streaming#chunk-0",
+        "doc-python-integrations-tools-discord#chunk-8"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00555448,
+      "cost_usd": 0.00111128,
+      "latency_ms": 4461.543299999903,
+      "tokens_in": 1393,
+      "tokens_out": 352,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 24,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.8e-07,
+          "latency_ms": 462.359799999831
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1369,
+          "tokens_cached": 0,
+          "tokens_out": 352,
+          "cost_usd": 0.0011108000000000001,
+          "latency_ms": 3992.1944000016083
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer provides several correct methods for streaming messages and tool call outputs, including using stream_events and stream_mode, but it does not mention the specific use of interleave('messages', 'tool_calls') as in the reference, which is an essential detail.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009412
+      }
+    },
+    {
+      "id": "q-0048",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the context of LangChain's AgentMiddleware, why should you reset the skills metadata in the after_agent hook rather than after_model when reloading skills?",
+      "answer": "You should reset the skills metadata in the `after_agent` hook rather than `after_model` because a value stored mid-run (i.e., after a model call) leaves the prompt with no skills listed for the remaining model calls in that run. Resetting in `after_agent` ensures the reload happens at the start of the next run, avoiding partial runs with missing skills in the prompt. This allows the updated skills to be loaded cleanly for the next agent invocation without disrupting the current run's prompt state [1].",
+      "retrieved_ids": [
+        "doc-deepagents-skills#chunk-39",
+        "doc-deepagents-skills#chunk-38",
+        "doc-deepagents-skills#chunk-72",
+        "doc-python-releases-langchain-v1#chunk-4",
+        "doc-langchain-multi-agent-skills#chunk-0"
+      ],
+      "cited_ids": [
+        "doc-deepagents-skills#chunk-39"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0034046,
+      "cost_usd": 0.0006814000000000001,
+      "latency_ms": 1992.4049000001105,
+      "tokens_in": 1312,
+      "tokens_out": 105,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 30,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6e-07,
+          "latency_ms": 498.43259999943257
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1282,
+          "tokens_cached": 0,
+          "tokens_out": 105,
+          "cost_usd": 0.0006808000000000001,
+          "latency_ms": 1486.5766000002623
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately explains that resetting in after_agent avoids missing skills in the prompt during the current run and ensures a clean reload for the next run, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00581
+      }
+    },
+    {
+      "id": "q-0047",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you enable programmatic tool calling (PTC) for a LangChain agent using the CodeInterpreterMiddleware?",
+      "answer": "To enable programmatic tool calling (PTC) for a LangChain agent using the `CodeInterpreterMiddleware`, you need to pass an allowlist of tool names to the `ptc` parameter when creating the middleware and include it in the agent's middleware list. For example, to allow the `web_search` tool:\n\n```python\nfrom deepagents import create_deep_agent\nfrom langchain_quickjs import CodeInterpreterMiddleware\n\nagent = create_deep_agent(\n    model=\"model-identifier\",\n    middleware=[CodeInterpreterMiddleware(ptc=[\"web_search\"])],\n)\n```\n\nReplace `\"model-identifier\"` with the desired model string such as `\"baseten:zai-org/GLM-5.2\"`, `\"google_genai:gemini-3.6-flash\"`, `\"openai:gpt-5.5\"`, etc. This setup exposes the allowlisted tools as async functions under the global `tools` namespace inside the interpreter, enabling the agent to call them programmatically in code [1][2][4].",
+      "retrieved_ids": [
+        "doc-deepagents-interpreters#chunk-9",
+        "doc-deepagents-interpreters#chunk-8",
+        "doc-deepagents-interpreters#chunk-6",
+        "doc-deepagents-interpreters#chunk-7",
+        "doc-deepagents-interpreters#chunk-18"
+      ],
+      "cited_ids": [
+        "doc-deepagents-interpreters#chunk-9",
+        "doc-deepagents-interpreters#chunk-8",
+        "doc-deepagents-interpreters#chunk-7"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00500846,
+      "cost_usd": 0.0010020600000000001,
+      "latency_ms": 3079.3376000001444,
+      "tokens_in": 1679,
+      "tokens_out": 212,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 23,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.6000000000000004e-07,
+          "latency_ms": 448.6409000001004
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1656,
+          "tokens_cached": 0,
+          "tokens_out": 212,
+          "cost_usd": 0.0010016,
+          "latency_ms": 2624.049699999887
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer correctly explains that you enable PTC by passing an allowlist of tool names to the ptc parameter of CodeInterpreterMiddleware, matching the reference answer and providing additional correct context.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.007508
+      }
+    },
+    {
+      "id": "q-0050",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the DeepAgents config file, what does setting `warnings.cache_prompt` to \"off\" do?",
+      "answer": "Setting `warnings.cache_prompt` to `\"off\"` in the DeepAgents config file disables cache prompts, including send-time cache-cost confirmations. However, it does not disable the separate session cost warning. This setting applies to interactive chat mode, not headless mode [1].",
+      "retrieved_ids": [
+        "doc-deepagents-code-config-file#chunk-9",
+        "doc-deepagents-code-config-file#chunk-10",
+        "doc-deepagents-code-config-file#chunk-7",
+        "doc-deepagents-code-config-file#chunk-11",
+        "doc-deepagents-code-config-file#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-deepagents-code-config-file#chunk-9"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00318842,
+      "cost_usd": 0.00063802,
+      "latency_ms": 1939.7672999984934,
+      "tokens_in": 1399,
+      "tokens_out": 54,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 21,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 4.2e-07,
+          "latency_ms": 466.47399999892514
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1378,
+          "tokens_cached": 0,
+          "tokens_out": 54,
+          "cost_usd": 0.0006376,
+          "latency_ms": 1466.0426000009465
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes the effect of the setting and adds correct extra detail about its applicability to interactive chat mode.",
+        "is_refusal": false,
+        "n_claims": 3,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005176
+      }
+    },
+    {
+      "id": "q-0051",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the MCP tools auto-discovery feature, how are multiple configuration files merged when the same server name appears in more than one config file?",
+      "answer": "When multiple MCP configuration files exist and the same server name appears in more than one file, the server entries are merged by server name such that the higher-precedence config file's server definition completely replaces the entire earlier server object. Nested fields are not deep-merged. This allows a project-level config to override a user-level entry without affecting other projects. Differently named servers are preserved and merged together. The precedence order is user-level config lowest, then project-level `.deepagents/.mcp.json`, and highest is project-level root `.mcp.json`[1].",
+      "retrieved_ids": [
+        "doc-deepagents-code-mcp-tools#chunk-5",
+        "doc-deepagents-code-mcp-tools#chunk-6",
+        "doc-deepagents-code-mcp-tools#chunk-14",
+        "doc-deepagents-code-mcp-tools#chunk-4",
+        "doc-javascript-integrations-tools-anthropic#chunk-19"
+      ],
+      "cited_ids": [
+        "doc-deepagents-code-mcp-tools#chunk-5"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0030505600000000003,
+      "cost_usd": 0.00061056,
+      "latency_ms": 2089.433500001178,
+      "tokens_in": 1097,
+      "tokens_out": 114,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 28,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.6e-07,
+          "latency_ms": 432.205500001146
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1069,
+          "tokens_cached": 0,
+          "tokens_out": 114,
+          "cost_usd": 0.00061,
+          "latency_ms": 1649.7455999997328
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes that higher-precedence config replaces the entire server object and not just nested fields, matching the reference, and adds correct details about precedence order.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005594
+      }
+    },
+    {
+      "id": "q-0049",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the LangChain React integration, how does the IDEPreview component determine when to refresh a single file versus the entire file tree based on tool calls?",
+      "answer": "In the LangChain React integration, the `IDEPreview` component listens to the stream's messages and builds a map of file-mutating tool calls from AI messages. It tracks tool calls with names `\"write_file\"`, `\"edit_file\"`, and `\"execute\"`.\n\n- When a `ToolMessage` appears corresponding to a file-mutating tool call, it checks the tool call's name:\n  - If the tool call is `\"write_file\"` or `\"edit_file\"`, it refreshes a single file using the file path from the tool call arguments.\n  - If the tool call is `\"execute\"`, it refreshes the entire file tree and files.\n\nThis logic ensures files are updated in real-time as the agent works, not just after it finishes. The relevant code snippet is:\n\n```tsx\nif (call.name === \"write_file\" || call.name === \"edit_file\") {\n  refreshSingleFile(call.args.path ?? call.args.file_path);\n} else if (call.name === \"execute\") {\n  refreshTreeAndFiles();\n}\n```\n\nThis approach is described in detail in the React example and summarized in the explanation that the IDE updates files as the agent works, refreshing specific files on write/edit and everything on execute [1][3].",
+      "retrieved_ids": [
+        "doc-deepagents-frontend-sandbox#chunk-21",
+        "doc-deepagents-frontend-sandbox#chunk-24",
+        "doc-deepagents-frontend-sandbox#chunk-20",
+        "doc-langchain-multi-agent-skills-sql-assistant#chunk-35",
+        "doc-contributing-publish-langchain#chunk-6"
+      ],
+      "cited_ids": [
+        "doc-deepagents-frontend-sandbox#chunk-21",
+        "doc-deepagents-frontend-sandbox#chunk-20"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0053766,
+      "cost_usd": 0.0010758,
+      "latency_ms": 3561.5739000004396,
+      "tokens_in": 1706,
+      "tokens_out": 253,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 30,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6e-07,
+          "latency_ms": 483.9669999983016
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1676,
+          "tokens_cached": 0,
+          "tokens_out": 253,
+          "cost_usd": 0.0010752000000000001,
+          "latency_ms": 3070.9320999994816
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes how IDEPreview distinguishes between single file and full tree refreshes based on tool call names, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 8,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00843
+      }
+    },
+    {
+      "id": "q-0053",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "In the DeepAgents RubricMiddleware for LangGraph, what happens if the grader reaches the maximum number of iterations without producing a 'satisfied' verdict?",
+      "answer": "If the grader reaches the maximum number of iterations without producing a 'satisfied' verdict, the agent terminates with the status `max_iterations_reached`. This means the grader still wants revisions, but the configured iteration cap has been hit, so the loop ends without further retries. The agent does not loop back in this case. This behavior is part of the rubric evaluation loop where the LLM-as-a-judge grader sub-agent reviews the output and returns a verdict after each iteration [1][4].",
+      "retrieved_ids": [
+        "doc-deepagents-rubric#chunk-0",
+        "doc-deepagents-rubric#chunk-3",
+        "doc-langchain-middleware-built-in#chunk-60",
+        "doc-deepagents-rubric#chunk-7",
+        "doc-deepagents-rubric#chunk-18"
+      ],
+      "cited_ids": [
+        "doc-deepagents-rubric#chunk-0",
+        "doc-deepagents-rubric#chunk-7"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00397664,
+      "cost_usd": 0.00079584,
+      "latency_ms": 2141.8682000003173,
+      "tokens_in": 1616,
+      "tokens_out": 101,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 32,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6.4e-07,
+          "latency_ms": 457.43559999937133
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1584,
+          "tokens_cached": 0,
+          "tokens_out": 101,
+          "cost_usd": 0.0007952,
+          "latency_ms": 1677.6125999986107
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately states that the agent terminates with 'max_iterations_reached' if no 'satisfied' verdict is produced, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006354
+      }
+    },
+    {
+      "id": "q-0052",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the DeepAgents library allow you to coordinate multiple specialized subagents for tasks such as data collection, analysis, and report writing?",
+      "answer": "The DeepAgents library allows coordination of multiple specialized subagents by defining each subagent with a specific role, description, system prompt, and tools tailored to its task. You create a list of subagents, each responsible for a distinct part of the workflow such as data collection, data analysis, and report writing. Then, you create a main agent using `create_deep_agent`, specifying a system prompt that instructs it to coordinate these subagents for specialized tasks.\n\nThe typical workflow is:\n1. The main agent creates a high-level plan.\n2. Delegates data collection to the \"data-collector\" subagent.\n3. Passes collected data to the \"data-analyzer\" subagent.\n4. Sends insights to the \"report-writer\" subagent.\n5. Compiles the final output.\n\nEach subagent operates with a clean context focused only on its specific task, ensuring modular and efficient processing.\n\nExample structure of subagents:\n```python\nsubagents = [\n    {\n        \"name\": \"data-collector\",\n        \"description\": \"Gathers raw data from various sources\",\n        \"system_prompt\": \"Collect comprehensive data on the topic\",\n        \"tools\": [web_search_tool, api_call, database_query],\n    },\n    {\n        \"name\": \"data-analyzer\",\n        \"description\": \"Analyzes collected data for insights\",\n        \"system_prompt\": \"Analyze data and extract key insights\",\n        \"tools\": [statistical_analysis],\n    },\n    {\n        \"name\": \"report-writer\",\n        \"description\": \"Writes polished reports from analysis\",\n        \"system_prompt\": \"Create professional reports from insights\",\n        \"tools\": [format_document],\n    },\n]\n\nagent = create_deep_agent(\n    model=\"openai:gpt-5.5\",  # or other supported models\n    system_prompt=\"You coordinate data analysis and reporting. Use subagents for specialized tasks.\",\n    subagents=subagents,\n)\n```\n\nThis pattern is demonstrated with various models such as Ollama, OpenAI, Google Gemini, Anthropic Claude, and Baseten GLM, showing the flexibility of the approach across different LLM providers [1][2][3][4][5].",
+      "retrieved_ids": [
+        "doc-deepagents-subagents#chunk-71",
+        "doc-deepagents-subagents#chunk-66",
+        "doc-deepagents-subagents#chunk-65",
+        "doc-deepagents-subagents#chunk-67",
+        "doc-deepagents-subagents#chunk-70"
+      ],
+      "cited_ids": [
+        "doc-deepagents-subagents#chunk-71",
+        "doc-deepagents-subagents#chunk-66",
+        "doc-deepagents-subagents#chunk-65",
+        "doc-deepagents-subagents#chunk-67",
+        "doc-deepagents-subagents#chunk-70"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.006420540000000001,
+      "cost_usd": 0.00128454,
+      "latency_ms": 5750.508699999045,
+      "tokens_in": 1453,
+      "tokens_out": 446,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 27,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.4e-07,
+          "latency_ms": 518.164600000091
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1426,
+          "tokens_cached": 0,
+          "tokens_out": 446,
+          "cost_usd": 0.001284,
+          "latency_ms": 5225.894899998821
+        }
+      ],
+      "retrieval": {
+        "recall@5": 0.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes defining subagents with roles, system prompts, and tools, coordinating them via create_deep_agent, and gives a detailed example, matching the reference.",
+        "is_refusal": false,
+        "n_claims": 7,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.009046
+      }
+    },
+    {
+      "id": "q-0054",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you provide credentials for using WatsonxEmbeddings in LangChain?",
+      "answer": "To provide credentials for using WatsonxEmbeddings in LangChain, you need to set your IBM Cloud user API key as an environment variable `WATSONX_APIKEY`. This can be done by securely inputting the API key and assigning it to the environment variable, for example:\n\n```python\nimport os\nfrom getpass import getpass\n\nwatsonx_api_key = getpass()\nos.environ[\"WATSONX_APIKEY\"] = watsonx_api_key\n```\n\nAdditionally, you can set other optional environment variables for accessing different IBM watsonx.ai cluster configurations, such as `WATSONX_URL`, `WATSONX_TOKEN`, `WATSONX_PASSWORD`, `WATSONX_USERNAME`, and `WATSONX_INSTANCE_ID` as needed:\n\n```python\nimport os\n\nos.environ[\"WATSONX_URL\"] = \"your service instance url\"\nos.environ[\"WATSONX_TOKEN\"] = \"your token for accessing the CLOUD or CPD cluster\"\nos.environ[\"WATSONX_PASSWORD\"] = \"your password for accessing the CPD cluster\"\nos.environ[\"WATSONX_USERNAME\"] = \"your username for accessing the CPD cluster\"\nos.environ[\"WATSONX_INSTANCE_ID\"] = \"your instance_id for accessing the CPD cluster\"\n```\n\nThis setup is required before using the WatsonxEmbeddings integration in LangChain [5][4].",
+      "retrieved_ids": [
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-0",
+        "doc-javascript-integrations-embeddings-ibm#chunk-0",
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-3",
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-1",
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-2"
+      ],
+      "cited_ids": [
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-2",
+        "doc-python-integrations-embeddings-ibm-watsonx#chunk-1"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0035723,
+      "cost_usd": 0.0007147000000000001,
+      "latency_ms": 3592.273000000205,
+      "tokens_in": 649,
+      "tokens_out": 288,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 15,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 3e-07,
+          "latency_ms": 469.26429999984975
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 634,
+          "tokens_cached": 0,
+          "tokens_out": 288,
+          "cost_usd": 0.0007144000000000001,
+          "latency_ms": 3115.918800000145
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.2,
+        "ndcg@5": 0.38685280723454163
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes setting WATSONX_APIKEY and the additional environment variables, matching the reference answer.",
+        "is_refusal": false,
+        "n_claims": 4,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.005698
+      }
+    },
+    {
+      "id": "q-0055",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How do you instantiate a ChatDeepSeek model in the LangChain @langchain/deepseek integration and generate a chat completion?",
+      "answer": "To instantiate a ChatDeepSeek model and generate a chat completion in the LangChain @langchain/deepseek integration, you can do the following:\n\nIn Python:\n```python\nfrom langchain_deepseek import ChatDeepSeek\n\nllm = ChatDeepSeek(\n    model=\"deepseek-chat\",\n    temperature=0,\n    max_tokens=None,\n    timeout=None,\n    max_retries=2,\n    # other params...\n)\n```\n\nIn TypeScript:\n```typescript\nimport { ChatDeepSeek } from \"@langchain/deepseek\";\n\nconst llm = new ChatDeepSeek({\n  model: \"deepseek-reasoner\",\n  temperature: 0,\n  // other params...\n})\n\nconst aiMsg = await llm.invoke([\n  [\n    \"system\",\n    \"You are a helpful assistant that translates English to French. Translate the user sentence.\",\n  ],\n  [\"human\", \"I love programming.\"],\n])\nconsole.log(aiMsg)\n```\n\nThis will create the model instance and generate a chat completion response from the model [1][3].",
+      "retrieved_ids": [
+        "doc-python-integrations-chat-deepseek#chunk-6",
+        "doc-javascript-integrations-chat-deepseek#chunk-0",
+        "doc-javascript-integrations-chat-deepseek#chunk-6",
+        "doc-javascript-integrations-chat-deepseek#chunk-5",
+        "doc-javascript-integrations-chat-deepseek#chunk-1"
+      ],
+      "cited_ids": [
+        "doc-python-integrations-chat-deepseek#chunk-6",
+        "doc-javascript-integrations-chat-deepseek#chunk-6"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.00376052,
+      "cost_usd": 0.0007525199999999999,
+      "latency_ms": 3236.1916999998357,
+      "tokens_in": 1046,
+      "tokens_out": 215,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 26,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5.2e-07,
+          "latency_ms": 545.0225999993563
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1020,
+          "tokens_cached": 0,
+          "tokens_out": 215,
+          "cost_usd": 0.000752,
+          "latency_ms": 2684.2379000008805
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg@5": 0.5
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 0.5,
+        "correctness_verdict": "partially_correct",
+        "correctness_reason": "The answer provides correct TypeScript usage matching the reference, but the Python example is irrelevant since the question and reference are about the @langchain/deepseek (TypeScript/JavaScript) integration.",
+        "is_refusal": false,
+        "n_claims": 6,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00668
+      }
+    },
+    {
+      "id": "q-0056",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How can you use the BoxRetriever class in LangChain to filter search results by folder, file content, creation date, and file size?",
+      "answer": "You can use the `BoxRetriever` class with the `BoxSearchOptions` to filter search results by folder, file content, creation date, and file size. Specifically:\n\n1. Import the necessary enums and classes:\n```python\nfrom langchain_box import BoxRetriever\nfrom langchain_box.utilities import BoxSearchOptions, DocumentFiles, SearchTypeFilter\n```\n\n2. Define your folder ID and create a `BoxSearchOptions` instance with filters:\n- `ancestor_folder_ids` to specify the folder(s) to search within.\n- `search_type_filter` to filter by file content.\n- `created_date_range` to specify the creation date range.\n- `size_range` to filter by file size.\n- `k` to limit the number of results.\n\nExample:\n```python\nbox_folder_id = \"260931903795\"\n\nbox_search_options = BoxSearchOptions(\n    ancestor_folder_ids=[box_folder_id],\n    search_type_filter=[SearchTypeFilter.FILE_CONTENT],\n    created_date_range=[\"2023-01-01T00:00:00-07:00\", \"2024-08-01T00:00:00-07:00,\"],\n    k=200,\n    size_range=[1, 1000000],\n    updated_data_range=None,\n)\n```\n\n3. Instantiate the `BoxRetriever` with your developer token and the search options:\n```python\nretriever = BoxRetriever(\n    box_developer_token=box_developer_token, box_search_options=box_search_options\n)\n```\n\n4. Invoke the retriever with your query:\n```python\nretriever.invoke(\"AstroTech Solutions\")\n```\n\nThis setup filters the search to files within the specified folder, searches file content, restricts results by creation date and file size, and returns up to 200 documents matching the query [1].",
+      "retrieved_ids": [
+        "doc-python-integrations-retrievers-box#chunk-7",
+        "doc-python-integrations-retrievers-box#chunk-13",
+        "doc-python-integrations-retrievers-box#chunk-1",
+        "doc-python-integrations-retrievers-box#chunk-8",
+        "doc-python-integrations-retrievers-egnyte#chunk-8"
+      ],
+      "cited_ids": [
+        "doc-python-integrations-retrievers-box#chunk-7"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0056946,
+      "cost_usd": 0.0011394,
+      "latency_ms": 4521.044499999334,
+      "tokens_in": 1377,
+      "tokens_out": 375,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 30,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6e-07,
+          "latency_ms": 581.8223999995098
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1347,
+          "tokens_cached": 0,
+          "tokens_out": 375,
+          "cost_usd": 0.0011388000000000001,
+          "latency_ms": 3932.1315999986837
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes using BoxRetriever with BoxSearchOptions to filter by folder, file content, creation date, and file size, matching the reference answer and providing correct details.",
+        "is_refusal": false,
+        "n_claims": 10,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.008539999999999999
+      }
+    },
+    {
+      "id": "q-0057",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "How does the `useResponsesApi` option in the LangChain `ChatPerplexity` class affect which Perplexity API endpoint is used?",
+      "answer": "The `useResponsesApi` option in the LangChain `ChatPerplexity` class controls which Perplexity API endpoint is used for requests:\n\n- If `useResponsesApi` is `undefined` (default), the endpoint is auto-detected:\n  - Routes to the Agent API (`client.responses.create()`) when the request uses a built-in Perplexity tool (`web_search`, `fetch_url`, `finance_search`, `people_search`) or includes a Responses-only field (`previousResponseId`, `instructions`, `input`, `include`).\n  - Otherwise, routes to Chat Completions (`client.chat.completions.create()`).\n\n- If `useResponsesApi` is `true`, it always uses the Agent API endpoint (`client.responses.create()`).\n\n- If `useResponsesApi` is `false`, it always uses the Chat Completions endpoint (`client.chat.completions.create()`).\n\nThis option enables access to Perplexity's built-in tools and stateful agent fields available only via the Agent API, while preserving default behavior for plain text requests [1][4].",
+      "retrieved_ids": [
+        "doc-javascript-integrations-chat-perplexity#chunk-8",
+        "doc-javascript-integrations-providers-perplexity#chunk-2",
+        "doc-javascript-integrations-chat-perplexity#chunk-9",
+        "doc-python-integrations-chat-perplexity#chunk-7",
+        "doc-javascript-integrations-chat-perplexity#chunk-11"
+      ],
+      "cited_ids": [
+        "doc-javascript-integrations-chat-perplexity#chunk-8",
+        "doc-python-integrations-chat-perplexity#chunk-7"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0049206,
+      "cost_usd": 0.0009846,
+      "latency_ms": 2948.06299999982,
+      "tokens_in": 1606,
+      "tokens_out": 221,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 30,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 6e-07,
+          "latency_ms": 540.8127999999124
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 1576,
+          "tokens_cached": 0,
+          "tokens_out": 221,
+          "cost_usd": 0.000984,
+          "latency_ms": 2398.419200000717
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer accurately describes how the `useResponsesApi` option determines which API endpoint is used, matching the reference and providing additional correct detail.",
+        "is_refusal": false,
+        "n_claims": 5,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.00788
+      }
+    },
+    {
+      "id": "q-0068",
+      "type": "simple",
+      "source": "synthetic",
+      "question": "What are some recommended mitigation strategies in LangChain when giving agents access to external resources like file systems, APIs, or databases?",
+      "answer": "Recommended mitigation strategies in LangChain when giving agents access to external resources include:\n\n1. Limit the agent's access to only specific directories or safe files when dealing with file systems. Consider sandboxing the agent by running it in a container to further isolate it.  \n2. For APIs, provide read-only API keys or restrict the agent to use only endpoints that are resistant to misuse.  \n3. For databases, scope credentials to only the necessary tables and consider issuing read-only credentials to prevent schema mutations or data deletion.  \n4. Follow the principle of least privilege by granting only the permissions necessary for the application's needs.  \n5. Anticipate potential misuse by assuming that any credentials or system access could be used in any way allowed by their permissions.  \n6. Employ defense in depth by combining multiple security layers, such as read-only permissions plus sandboxing, to reduce risks.  \n\nThese strategies help mitigate risks such as data corruption, unauthorized access, and compromised availability. It is also advised to consult with your company's security team when designing such applications [2][3][1].",
+      "retrieved_ids": [
+        "doc-security-policy#chunk-0",
+        "doc-security-policy#chunk-2",
+        "doc-security-policy#chunk-1",
+        "doc-concepts-products#chunk-4",
+        "doc-langchain-context-engineering#chunk-19"
+      ],
+      "cited_ids": [
+        "doc-security-policy#chunk-2",
+        "doc-security-policy#chunk-1",
+        "doc-security-policy#chunk-0"
+      ],
+      "model_tier_used": "medium",
+      "route": null,
+      "expected_route": "simple_rag",
+      "grounded": null,
+      "gave_up": false,
+      "escalations": 0,
+      "retries": 0,
+      "cache_hit": null,
+      "counterfactual_cost_usd": 0.0035865000000000003,
+      "cost_usd": 0.0007177,
+      "latency_ms": 5174.819199999547,
+      "tokens_in": 954,
+      "tokens_out": 216,
+      "usage": [
+        {
+          "node": "retrieve",
+          "model": "text-embedding-3-small",
+          "tokens_in": 25,
+          "tokens_cached": 0,
+          "tokens_out": 0,
+          "cost_usd": 5e-07,
+          "latency_ms": 1197.5675000012416
+        },
+        {
+          "node": "generate",
+          "model": "gpt-4.1-mini",
+          "tokens_in": 929,
+          "tokens_cached": 0,
+          "tokens_out": 216,
+          "cost_usd": 0.0007172000000000001,
+          "latency_ms": 3969.5303999997122
+        }
+      ],
+      "retrieval": {
+        "recall@5": 1.0,
+        "doc_recall@5": 1.0,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      "judge": {
+        "faithfulness": 1.0,
+        "citation_precision": 1.0,
+        "correctness": 1.0,
+        "correctness_verdict": "correct",
+        "correctness_reason": "The answer covers all key mitigation strategies from the reference and adds relevant, accurate security best practices without contradiction.",
+        "is_refusal": false,
+        "n_claims": 9,
+        "unsupported_claims": [],
+        "judge_cost_usd": 0.006788
+      }
+    }
+  ]
+}

@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS requests (
     pipeline   TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS feedback (
+    request_id TEXT NOT NULL REFERENCES requests (request_id) ON DELETE CASCADE,
+    value      INT  NOT NULL,
+    comment    TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 CREATE TABLE IF NOT EXISTS events (
     request_id TEXT NOT NULL REFERENCES requests (request_id) ON DELETE CASCADE,
     seq        INT  NOT NULL,
@@ -52,3 +58,11 @@ def load_events(request_id: str) -> list[dict]:
     with get_pool().connection() as conn:
         rows = conn.execute("SELECT event FROM events WHERE request_id = %s ORDER BY seq", (request_id,)).fetchall()
     return [r[0] if isinstance(r[0], dict) else json.loads(r[0]) for r in rows]
+
+
+def save_feedback(request_id: str, value: int, comment: str | None) -> None:
+    ensure_schema()
+    with get_pool().connection() as conn:
+        conn.execute(
+            "INSERT INTO feedback (request_id, value, comment) VALUES (%s, %s, %s)", (request_id, value, comment)
+        )

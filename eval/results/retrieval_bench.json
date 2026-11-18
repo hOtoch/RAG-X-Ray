@@ -56,6 +56,24 @@
       "ndcg@5": 0.6295,
       "latency_ms_p50": 2433.4,
       "latency_ms_p95": 3462.6
+    },
+    "hybrid bm25 + rerank ms-marco-MiniLM-L-12-v2": {
+      "recall@5": 0.7168,
+      "doc_recall@5": 0.9423,
+      "recall@20": 0.9026,
+      "mrr": 0.704,
+      "ndcg@5": 0.6454,
+      "latency_ms_p50": 3861.4,
+      "latency_ms_p95": 5512.1
+    },
+    "hybrid bm25 + rerank jina-reranker-v1-turbo-en": {
+      "recall@5": 0.756,
+      "doc_recall@5": 0.9538,
+      "recall@20": 0.9026,
+      "mrr": 0.6888,
+      "ndcg@5": 0.654,
+      "latency_ms_p50": 2490.8,
+      "latency_ms_p95": 3383.4
     }
   }
 }

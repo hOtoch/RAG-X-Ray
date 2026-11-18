@@ -1,0 +1,89 @@
+name: Eval
+
+# Roda um subconjunto estratificado do golden dataset contra a pipeline principal e falha o PR
+# se recall, faithfulness ou correção caírem, ou se o custo por pergunta subir além da tolerância
+# (eval/gate.py). Custo por execução: ~US$ 0,05 de indexação + ~US$ 0,25 de perguntas e juiz.
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - "eval/**"
+      - "configs/**"
+  workflow_dispatch:
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIPELINE: v3
+  SUBSET: "24"
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: ragxray
+          POSTGRES_PASSWORD: ragxray
+          POSTGRES_DB: ragxray
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ragxray" --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Checar segredo
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Configure o segredo OPENAI_API_KEY no repositório para rodar o eval na CI."
+            exit 1
+          fi
+      - name: Configurar ambiente
+        run: |
+          cp .env.example .env
+          sed -i 's/^LANGFUSE_ENABLED=.*/LANGFUSE_ENABLED=false/' .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+      - name: Instalar dependências
+        working-directory: backend
+        run: uv sync --frozen
+      - name: Cache do corpus e dos modelos
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/raw
+            data/models
+          key: corpus-4db8ed56-models-v1
+      - name: Indexar o corpus
+        working-directory: backend
+        run: |
+          psql postgresql://ragxray:ragxray@localhost:5433/ragxray -c "CREATE EXTENSION IF NOT EXISTS vector"
+          uv run python -m ingest
+      - name: Rodar o eval (subconjunto)
+        run: uv run --project backend python -m eval.run_eval --pipeline "$PIPELINE" --subset "$SUBSET"
+      - name: Gate de regressão
+        run: |
+          uv run --project backend python -m eval.gate \
+            --baseline "eval/results/baseline/${PIPELINE}.subset${SUBSET}.json" \
+            --current "eval/results/${PIPELINE}.subset${SUBSET}.json"
+      - name: Comentar no PR
+        if: always() && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: eval/results/gate_summary.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: eval/results/*.json

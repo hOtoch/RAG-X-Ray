@@ -188,6 +188,7 @@ def test_detect_language():
     assert detect_language("What is the capital of France?") == "en"
 
 
-def test_router_pipeline_requires_rerank():
-    with pytest.raises(ValueError):
-        build_graph(PipelineConfig(name="x", router=True, rerank=False))
+def test_router_pipeline_without_rerank_selects_top_k(agent):
+    result, nodes, _ = agent(Script(route="simple_rag"), rerank=False)
+    assert nodes == ["router", "retrieve", "select_context", "compress_context", "generate", "groundedness_check"]
+    assert len(result.context) == 3

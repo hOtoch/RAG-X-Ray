@@ -26,3 +26,13 @@ def make_rerank(pipeline: PipelineConfig):
         }
 
     return rerank
+
+
+def make_select_context(pipeline: PipelineConfig):
+    """Sem rerank: o contexto são os primeiros candidatos na ordem do RRF."""
+
+    def select_context(state: AgentState) -> dict:
+        top_k = pipeline.multi_hop_top_k if state.get("route") == "multi_hop" else pipeline.top_k
+        return {"context": state.get("candidates", [])[:top_k]}
+
+    return select_context

@@ -26,8 +26,15 @@ from app.graph.nodes.compress import make_compress
 from app.graph.nodes.direct import make_direct_answer, make_refuse
 from app.graph.nodes.generate import make_generate
 from app.graph.nodes.groundedness import make_escalate, make_give_up, make_groundedness_check
-from app.graph.nodes.multihop import fan_out, make_decompose, make_grade_docs, make_merge_results, make_retry_retrieve
-from app.graph.nodes.rerank import make_rerank
+from app.graph.nodes.multihop import (
+    fan_out,
+    make_decompose,
+    make_grade_docs,
+    make_merge_results,
+    make_retrieve_sub,
+    make_retry_retrieve,
+)
+from app.graph.nodes.rerank import make_rerank, make_select_context
 from app.graph.nodes.retrieve import make_retrieve
 from app.graph.nodes.router import make_router
 from app.graph.state import AgentState
@@ -95,27 +102,23 @@ def build_graph(pipeline: PipelineConfig):
         after_generate("generate")
         return builder.compile()
 
-    if not pipeline.rerank:
-        raise ValueError("Pipelines com router exigem rerank: o caminho multi-hop junta resultados no rerank")
-
+    # Ponto onde os candidatos viram contexto: rerank (se ligado) ou só o corte no top-k.
+    select = "rerank" if pipeline.rerank else "select_context"
     for name, factory in [
         ("router", make_router),
         ("direct_answer", make_direct_answer),
         ("refuse", make_refuse),
         ("retrieve", make_retrieve),
         ("decompose", make_decompose),
+        ("retrieve_sub", make_retrieve_sub),  # recebe só a sub-pergunta (via Send)
         ("merge_results", make_merge_results),
-        ("rerank", make_rerank),
+        (select, make_rerank if pipeline.rerank else make_select_context),
         ("grade_docs", make_grade_docs),
         ("retry_retrieve", make_retry_retrieve),
         ("compress_context", make_compress),
         ("generate", make_generate),
     ]:
         node(name, factory)
-    # retrieve_sub recebe só a sub-pergunta (via Send), não o estado inteiro.
-    from app.graph.nodes.multihop import make_retrieve_sub
-
-    node("retrieve_sub", make_retrieve_sub)
 
     entry("router")
     builder.add_conditional_edges(
@@ -126,16 +129,17 @@ def build_graph(pipeline: PipelineConfig):
     builder.add_edge("direct_answer", final)
     builder.add_edge("refuse", final)
 
-    builder.add_edge("retrieve", "rerank")
+    builder.add_edge("retrieve", select)
     builder.add_conditional_edges("decompose", fan_out, ["retrieve_sub"])
     builder.add_edge("retrieve_sub", "merge_results")
-    builder.add_edge("merge_results", "rerank")
-    builder.add_edge("retry_retrieve", "rerank")
-    # Depois do rerank: simple_rag segue direto; multi_hop passa pela avaliação dos trechos.
+    builder.add_edge("merge_results", select)
+    builder.add_edge("retry_retrieve", select)
+    # Depois da seleção: simple_rag segue direto; multi_hop passa pela avaliação dos trechos.
     builder.add_conditional_edges(
-        "rerank", _route, {"simple_rag": "compress_context", "multi_hop": "grade_docs", "trivial": "compress_context",
-                           "out_of_scope": "compress_context"},
-    )  # fmt: skip
+        select,
+        lambda s: "grade_docs" if _route(s) == "multi_hop" else "compress_context",
+        ["grade_docs", "compress_context"],
+    )
     builder.add_conditional_edges(
         "grade_docs", _next_action, {"retry": "retry_retrieve", "generate": "compress_context"}
     )

@@ -99,3 +99,22 @@ def test_cohen_kappa_by_hand():
     assert cohen_kappa(["y", "n"], ["n", "y"]) == pytest.approx(-1.0)
     with pytest.raises(ValueError):
         cohen_kappa(["y"], [])
+
+
+def test_gate_detects_regression_and_tolerates_noise():
+    from eval.gate import compare
+
+    def result(recall, faith, cost):
+        return {"metrics": {"retrieval": {"recall@5": recall, "doc_recall@5": recall},
+                            "generation": {"faithfulness": faith, "correctness": faith},
+                            "operational": {"cost_per_query_usd": cost}}}  # fmt: skip
+
+    base = result(0.75, 0.95, 0.001)
+    _, ok = compare(base, result(0.73, 0.94, 0.0011))  # dentro da tolerância
+    assert ok
+    rows, ok = compare(base, result(0.65, 0.95, 0.001))  # recall caiu 10 pontos
+    assert not ok and any(r["status"] == "REGRESSÃO" and r["metric"] == "retrieval.recall@5" for r in rows)
+    _, ok = compare(base, result(0.75, 0.95, 0.0015))  # custo subiu 50%
+    assert not ok
+    _, ok = compare(base, result(0.80, 0.99, 0.0005))  # melhorar nunca reprova
+    assert ok

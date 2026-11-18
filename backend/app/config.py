@@ -54,6 +54,7 @@ class Settings(BaseSettings):
 
     redis_url: str = "redis://localhost:6379/0"
     cache_ttl_seconds: int = 7 * 24 * 3600
+    cors_origins: str = "http://localhost:3001,http://localhost:3002"
 
     # Langfuse (tracing). Sem as chaves, o tracing fica desligado.
     langfuse_enabled: bool = True
@@ -66,6 +67,11 @@ class Settings(BaseSettings):
     hnsw_ef_search: int = 200
     max_retries: int = 2
     request_budget_usd: float = 0.05
+
+    # Proteções do demo público (0 desliga)
+    rate_limit_per_minute: int = 10
+    daily_budget_usd: float = 2.0
+    live_mode_enabled: bool = True
 
     prices_file: Path = ROOT / "configs" / "prices.yaml"
     pipelines_file: Path = ROOT / "configs" / "pipelines.yaml"

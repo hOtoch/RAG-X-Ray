@@ -23,3 +23,39 @@ v1:
   compress: true
   context_token_budget: 2000
   generate_tier: medium
+
+v2:
+  description: v1 + router, cascata de modelos por rota, multi-hop corretivo e checagem de groundedness
+  retrieval_mode: hybrid
+  candidates_k: 20
+  top_k: 5
+  multi_hop_top_k: 8
+  rerank: true
+  compress: true
+  context_token_budget: 2000
+  router: true
+  groundedness: true
+  escalate: true
+  generate_tier: medium
+  route_tiers:
+    simple_rag: medium
+    multi_hop: large
+
+v3:
+  description: v2 + cache exato e semântico (θ calibrado em eval/results/cache_threshold.json)
+  retrieval_mode: hybrid
+  candidates_k: 20
+  top_k: 5
+  multi_hop_top_k: 8
+  rerank: true
+  compress: true
+  context_token_budget: 2000
+  router: true
+  groundedness: true
+  escalate: true
+  cache: true
+  cache_threshold: 0.98
+  generate_tier: medium
+  route_tiers:
+    simple_rag: medium
+    multi_hop: large
